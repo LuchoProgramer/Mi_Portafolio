@@ -21,11 +21,12 @@ const SignUp = () => {
             await setDoc(doc(db, 'users', user.uid), {
                 email: user.email,
                 name: name,
+                role: 'viewer',
                 createdAt: new Date(),
             });
 
             alert('Registro exitoso.');
-            navigate('/signin');
+            navigate('/');
         } catch (error) {
             console.error('Error al registrar:', error);
             alert('Error: ' + error.message);
@@ -41,10 +42,11 @@ const SignUp = () => {
             await setDoc(doc(db, 'users', user.uid), {
                 email: user.email,
                 name: user.displayName,
+                role: 'viewer',
                 createdAt: new Date(),
             });
 
-            navigate('/cms');
+            navigate('/');
         } catch (error) {
             console.error('Error al registrarse con Google:', error);
             alert('Error: ' + error.message);

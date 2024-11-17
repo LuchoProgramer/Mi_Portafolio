@@ -3,12 +3,13 @@ import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Blogs from "../pages/Blogs";
 import SignIn from "../components/auth/SignIn";
+import SignUp from "../components/auth/SignUp";
 import CMSDashboard from "../components/cms/CMSDashboard";
 import BlogCreate from "../components/cms/BlogCreate";
 import BlogEdit from "../components/cms/BlogEdit";
 import BlogList from "../components/cms/BlogList";
 import ProtectedRoute from "../components/ProtectedRoute";
-import SignUp from "../components/auth/SignUp";
+import NotFound from "../pages/NotFound"; // Importa tu página 404
 
 const AppRoutes = () => {
     return (
@@ -19,7 +20,7 @@ const AppRoutes = () => {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
 
-            {/* Rutas del CMS (protegidas) */}
+            {/* Rutas protegidas */}
             <Route
                 path="/cms"
                 element={
@@ -52,6 +53,9 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 }
             />
+
+            {/* Página 404 */}
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 };
