@@ -1,12 +1,17 @@
-// src/App.js
 import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { ThemeProvider } from './ThemeContext';
 import AppRoutes from './routes/AppRoutes';
 
 function App() {
   return (
-    <div className="App">
-      <AppRoutes />
-    </div>
+    <ThemeProvider>
+      <Router>
+        <div className="App">
+          <AppRoutes />
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 

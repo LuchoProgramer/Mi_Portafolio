@@ -1,16 +1,18 @@
-// src/components/layout/MainLayout.jsx
-import React from "react";
-import Header from "./Header";
-import Footer from "./Footer";
+// src/components/MainLayout.jsx
+import React from 'react';
+import Header from './Header';
+import Footer from './Footer';
+import ToggleDarkMode from '../../ToggleDarkMode';
 
-const MainLayout = ({ children }) => {
+function MainLayout({ children }) {
     return (
-        <div>
+        <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="container mx-auto p-4">{children}</main>
+            <ToggleDarkMode />
+            <main className="flex-grow">{children}</main>
             <Footer />
         </div>
     );
-};
+}
 
 export default MainLayout;

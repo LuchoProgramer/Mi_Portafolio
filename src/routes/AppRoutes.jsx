@@ -9,11 +9,21 @@ import BlogCreate from "../components/cms/BlogCreate";
 import BlogEdit from "../components/cms/BlogEdit";
 import BlogList from "../components/cms/BlogList";
 import ProtectedRoute from "../components/ProtectedRoute";
-import NotFound from "../pages/NotFound"; // Importa tu página 404
+import NotFound from "../pages/NotFound";
+import MainLayout from "../components/layout/MainLayout";
 
 const AppRoutes = () => {
     return (
         <Routes>
+            {/* Ruta principal */}
+            <Route
+                path="/"
+                element={
+                    <MainLayout>
+                        <Home />
+                    </MainLayout>
+                }
+            />
             {/* Rutas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/blogs" element={<Blogs />} />
