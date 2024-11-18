@@ -103,13 +103,12 @@ function TravelMap() {
                                 className="tooltip"
                                 permanent={false}
                             >
-                                <div className="bg-white dark:bg-gray-veryDark bg-opacity-90 border rounded-lg p-2 text-sm text-gray-dark dark:text-gray-light text-center shadow-lg w-36 max-w-36 min-h-40 flex flex-col items-center justify-center">
-                                    <h3 className="font-bold truncate">{location.name}</h3>
+                                <div className="p-0 border-0 bg-transparent rounded-full flex items-center justify-center shadow-none w-32 h-32">
                                     {location.img && (
                                         <img
                                             src={location.img}
                                             alt={location.name}
-                                            className="w-24 h-auto max-h-20 object-cover aspect-[4/3] rounded-md mt-1"
+                                            className="w-full h-full object-cover rounded-full"
                                         />
                                     )}
                                 </div>

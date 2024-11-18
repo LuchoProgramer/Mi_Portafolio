@@ -9,3 +9,30 @@
     overflow: hidden;
     z-index: 0;
 }
+
+
+/* Asegurar que el Tooltip (contenedor principal) esté siempre por encima */
+.leaflet-tooltip {
+    z-index: 9999;
+    /* Muy alto para sobresalir sobre otros elementos */
+    position: absolute;
+    /* Asegura que pueda moverse libremente en el DOM */
+    overflow: visible;
+    /* Permite que el contenido del Tooltip sobresalga si es necesario */
+    pointer-events: none;
+    /* Evita que interfiera con el puntero */
+    background: transparent;
+    /* Sin fondo para evitar bloques no deseados */
+    border: none;
+    /* Sin borde para un diseño limpio */
+}
+
+/* Opcional: estilos adicionales si es necesario */
+.leaflet-tooltip img {
+    z-index: inherit;
+    /* Hereda el z-index del Tooltip principal */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    /* Sombra opcional para destacar */
+    border-radius: 50%;
+    /* Asegura que la imagen sea redonda */
+}
