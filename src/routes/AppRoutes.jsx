@@ -11,6 +11,13 @@ import BlogList from "../components/cms/BlogList";
 import ProtectedRoute from "../components/ProtectedRoute";
 import NotFound from "../pages/NotFound";
 import MainLayout from "../components/layout/MainLayout";
+import AboutMe from "../pages/AboutMe";
+import Technologies from "../pages/Technologies";
+import Projects from "../pages/Projects";
+import Experience from "../pages/Experience";
+import Languages from "../pages/Languages";
+import Hobbies from "../pages/Hobbies";
+import TravelMap from "../pages/TravelMap"
 
 const AppRoutes = () => {
     return (
@@ -21,6 +28,13 @@ const AppRoutes = () => {
                 element={
                     <MainLayout>
                         <Home />
+                        <AboutMe />
+                        <Technologies />
+                        <Projects />
+                        <Experience />
+                        <Languages />
+                        <Hobbies />
+                        <TravelMap />
                     </MainLayout>
                 }
             />
