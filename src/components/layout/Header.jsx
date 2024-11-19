@@ -130,11 +130,13 @@ const Header = () => {
 
             {/* Modal para Iniciar Sesión y Registrarse */}
             <Modal isOpen={isModalOpen} onClose={closeModal}>
-                {isSignIn ? (
-                    <SignIn onSuccess={handleSignInSuccess} switchToSignUp={switchToSignUp} />
-                ) : (
-                    <SignUp onSuccess={handleSignUpSuccess} switchToSignIn={switchToSignIn} />
-                )}
+                <div className="dark:bg-gray-800 dark:text-gray-200">
+                    {isSignIn ? (
+                        <SignIn onSuccess={handleSignInSuccess} switchToSignUp={switchToSignUp} />
+                    ) : (
+                        <SignUp onSuccess={handleSignUpSuccess} switchToSignIn={switchToSignIn} />
+                    )}
+                </div>
             </Modal>
         </header>
     );

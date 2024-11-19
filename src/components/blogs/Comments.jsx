@@ -1,13 +1,14 @@
-// src/components/Comments.jsx
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../../firebaseConfig';
-import { collection, addDoc, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { Link } from 'react-router-dom';
+import Modal from '../Modal/Modal'; // Ajusta la ruta según tu estructura
+import SignIn from '../auth/SignIn'; // Ajusta la ruta según tu estructura
 
 const Comments = ({ blogId }) => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar el modal
     const [user] = useAuthState(auth);
 
     useEffect(() => {
@@ -45,6 +46,9 @@ const Comments = ({ blogId }) => {
         }
     };
 
+    const openModal = () => setIsModalOpen(true); // Abrir el modal
+    const closeModal = () => setIsModalOpen(false); // Cerrar el modal
+
     return (
         <div className="mt-8">
             <h3 className="text-2xl font-bold mb-4">Comentarios</h3>
@@ -66,16 +70,30 @@ const Comments = ({ blogId }) => {
                     </button>
                 </form>
             ) : (
-                <div className="mb-4">
-                    <p className="text-gray-600">Debes <Link to="/signin" className="text-blue-500 hover:underline">iniciar sesión</Link> para comentar.</p>
-                </div>
+                <p className="text-gray-600">
+                    Debes{' '}
+                    <button
+                        onClick={openModal}
+                        className="text-blue-500 hover:underline bg-transparent border-none cursor-pointer"
+                    >
+                        iniciar sesión
+                    </button>{' '}
+                    para comentar.
+                </p>
+
             )}
+
+            {/* Modal para iniciar sesión */}
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+                <SignIn onSuccess={closeModal} />
+            </Modal>
+
             <div>
                 {comments.length > 0 ? (
                     comments.map((comment) => (
                         <div key={comment.id} className="mb-4 p-2 border-b border-gray-300">
                             <p className="text-sm text-gray-600">
-                                <strong>{comment.userName}</strong> - {new Date(comment.createdAt?.toDate()).toLocaleString()}
+                                <strong>{comment.userName}</strong> - {new Date(comment.createdAt).toLocaleString()}
                             </p>
                             <p className="text-gray-800">{comment.text}</p>
                         </div>

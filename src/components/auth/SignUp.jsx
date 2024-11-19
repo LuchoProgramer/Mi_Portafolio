@@ -1,14 +1,24 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { auth, db, googleProvider } from '../../firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
 
-const SignUp = () => {
-    const navigate = useNavigate();
+const SignUp = ({ onSuccess, switchToSignIn }) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const nameRef = useRef(null);
+
+    // Enfocar el primer campo al abrir el modal
+    useEffect(() => {
+        if (nameRef.current) {
+            nameRef.current.focus();
+        }
+    }, []);
 
     const handleSignUp = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
         const email = e.target.email.value;
         const password = e.target.password.value;
         const name = e.target.name.value;
@@ -35,14 +45,18 @@ const SignUp = () => {
             }
 
             alert('Registro exitoso.');
-            navigate('/');
+            onSuccess(); // Notificar al Header que el registro fue exitoso
         } catch (error) {
             console.error('Error al registrar:', error);
-            alert('Error: ' + error.message);
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleGoogleSignUp = async () => {
+        setLoading(true);
+        setError('');
         try {
             // Iniciar sesión con Google
             const result = await signInWithPopup(auth, googleProvider);
@@ -64,23 +78,65 @@ const SignUp = () => {
                 console.log('El usuario ya existe en Firestore.');
             }
 
-            navigate('/');
+            onSuccess(); // Notificar al Header que el registro fue exitoso
         } catch (error) {
             console.error('Error al registrarse con Google:', error);
-            alert('Error: ' + error.message);
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div>
-            <h1>Registrarse</h1>
-            <form onSubmit={handleSignUp}>
-                <input type="text" name="name" placeholder="Nombre" required />
-                <input type="email" name="email" placeholder="Correo electrónico" required />
-                <input type="password" name="password" placeholder="Contraseña" required />
-                <button type="submit">Registrarse</button>
+            <h2 className="text-xl font-semibold mb-4 text-center">Registrarse</h2>
+            {error && <p className="text-red-500 mb-2 text-center">{error}</p>}
+            <form onSubmit={handleSignUp} className="flex flex-col space-y-4">
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Nombre"
+                    required
+                    className="px-3 py-2 border rounded"
+                    ref={nameRef}
+                />
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Correo electrónico"
+                    required
+                    className="px-3 py-2 border rounded"
+                />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Contraseña"
+                    required
+                    className="px-3 py-2 border rounded"
+                />
+                <button
+                    type="submit"
+                    className="bg-primary-dark text-white py-2 rounded hover:bg-primary-light transition"
+                    disabled={loading}
+                >
+                    {loading ? 'Cargando...' : 'Registrarse'}
+                </button>
             </form>
-            <button onClick={handleGoogleSignUp}>Registrarse con Google</button>
+            <div className="mt-4 text-center">
+                <button
+                    onClick={handleGoogleSignUp}
+                    className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
+                    disabled={loading}
+                >
+                    {loading ? 'Cargando...' : 'Registrarse con Google'}
+                </button>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mt-4 text-center">
+                ¿Ya tienes una cuenta?{' '}
+                <button onClick={switchToSignIn} className="text-primary-dark hover:underline">
+                    Iniciar sesión
+                </button>
+            </p>
         </div>
     );
 };

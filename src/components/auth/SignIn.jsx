@@ -107,14 +107,20 @@ const SignIn = ({ onSuccess, switchToSignUp }) => {
                     {loading ? 'Cargando...' : 'Iniciar con Google'}
                 </button>
             </div>
-            <p className="mt-4 text-center">
+            <p className="text-gray-600 dark:text-gray-300 mt-4 text-center">
                 ¿No tienes una cuenta?{' '}
-                <button onClick={switchToSignUp} className="text-primary-dark hover:underline">
+                <button
+                    onClick={switchToSignUp}
+                    className="text-primary-dark hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-200"
+                >
                     Registrarse
                 </button>
+
+
             </p>
         </div>
     );
 };
 
 export default SignIn;
+
