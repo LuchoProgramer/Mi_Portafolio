@@ -40,3 +40,17 @@
 .read-the-docs {
   color: #888;
 }
+
+
+/* Para el modo claro */
+.ck-editor__editable_inline.light {
+  background-color: #ffffff; /* Fondo blanco */
+  color: #000000; /* Texto negro */
+}
+
+/* Para el modo oscuro */
+.ck-editor__editable_inline.dark {
+  background-color: #2d3748; /* Fondo gris oscuro */
+  color: #2d3748; /* Texto blanco */
+}
+

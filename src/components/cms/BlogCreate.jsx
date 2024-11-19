@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ThemeContext from '../../ThemeContext';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { uploadImageToCloudinary } from '../../utils/cloudinaryUtils';
@@ -11,6 +12,27 @@ const BlogCreate = () => {
     const [imageUrl, setImageUrl] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    const { isDark } = useContext(ThemeContext);
+    const editorRef = useRef(null);
+
+    useEffect(() => {
+        if (editorRef.current) {
+            const editor = editorRef.current;
+            editor.editing.view.change((writer) => {
+                writer.setStyle(
+                    "background-color",
+                    isDark ? "#2d3748" : "#ffffff",
+                    editor.editing.view.document.getRoot()
+                );
+                writer.setStyle(
+                    "color",
+                    isDark ? "#ffffff" : "#000000",
+                    editor.editing.view.document.getRoot()
+                );
+            });
+        }
+    }, [isDark]);
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -24,7 +46,7 @@ const BlogCreate = () => {
             await addDoc(collection(db, "blogs"), {
                 title,
                 content,
-                image: imageUrl, // URL de la imagen
+                image: imageUrl,
                 createdAt: new Date(),
             });
             alert('Blog creado exitosamente');
@@ -100,6 +122,21 @@ const BlogCreate = () => {
                     <CKEditor
                         editor={ClassicEditor}
                         data={content}
+                        onReady={(editor) => {
+                            editorRef.current = editor;
+                            editor.editing.view.change((writer) => {
+                                writer.setStyle(
+                                    "background-color",
+                                    isDark ? "#2d3748" : "#ffffff",
+                                    editor.editing.view.document.getRoot()
+                                );
+                                writer.setStyle(
+                                    "color",
+                                    isDark ? "#ffffff" : "#000000",
+                                    editor.editing.view.document.getRoot()
+                                );
+                            });
+                        }}
                         onChange={(event, editor) => {
                             const data = editor.getData();
                             setContent(data);
