@@ -7,12 +7,11 @@ import { FiMenu, FiX } from 'react-icons/fi';
 import ToggleDarkMode from '../../ToggleDarkMode';
 
 const Header = () => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false); // Para el menú hamburguesa
     const [menuOpen, setMenuOpen] = useState(false); // Para el menú del avatar
     const [user] = useAuthState(auth);
 
     const toggleMenu = () => setIsOpen(!isOpen);
-
     const toggleUserMenu = () => setMenuOpen(!menuOpen);
 
     const handleSignOut = async () => {
@@ -32,7 +31,6 @@ const Header = () => {
             );
         }
 
-        // Inicial del nombre si no hay foto
         const initial = user?.displayName?.charAt(0).toUpperCase() || 'U';
         return (
             <div
@@ -57,125 +55,155 @@ const Header = () => {
                     <span className="ml-1 w-1 h-5 bg-white animate-pulse"></span>
                 </Link>
 
-                {/* Toggle Dark Mode */}
-                <div className="hidden md:block">
-                    <ToggleDarkMode />
-                </div>
-
-
-                {/* Menú de Navegación */}
-                <nav
-                    className={`${isOpen ? 'block' : 'hidden'
-                        } absolute top-full left-0 w-full bg-primary-dark md:static md:block md:w-auto`}
-                    aria-label="Menú principal"
-                >
-                    <ul className="flex flex-col md:flex-row md:items-center md:space-x-6 p-4 md:p-0">
-                        <li>
-                            <Link
-                                to="/#home"
-                                className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Inicio
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/#projects"
-                                className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Proyectos
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/#about"
-                                className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Sobre mí
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                to="/blog"
-                                className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Blog
-                            </Link>
-                        </li>
-                    </ul>
-                </nav>
-
-                {/* Botones / Avatar */}
-                <div className="flex items-center space-x-4">
-                    {!user ? (
-                        <>
-                            <Link to="/signin" className="text-white hover:text-primary-light">
-                                Iniciar sesión
-                            </Link>
-                            <Link to="/signup" className="text-white hover:text-primary-light">
-                                Registrarse
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            {renderAvatar()}
-                            {/* Menú Desplegable del Avatar */}
-                            {menuOpen && (
-                                <div className="absolute top-14 right-4 bg-white text-black shadow-lg rounded-lg py-2 w-48">
-                                    <ul>
-                                        {user?.email === 'admin@correo.com' && ( // Verifica el rol de admin
-                                            <>
-                                                <li>
-                                                    <Link
-                                                        to="/cms/create"
-                                                        className="block px-4 py-2 hover:bg-gray-200"
-                                                        onClick={() => setMenuOpen(false)}
-                                                    >
-                                                        Crear Blog
-                                                    </Link>
-                                                </li>
-                                                <li>
-                                                    <Link
-                                                        to="/cms/list"
-                                                        className="block px-4 py-2 hover:bg-gray-200"
-                                                        onClick={() => setMenuOpen(false)}
-                                                    >
-                                                        Lista de Blogs
-                                                    </Link>
-                                                </li>
-                                            </>
-                                        )}
-                                        <li>
-                                            <button
-                                                onClick={handleSignOut}
-                                                className="block w-full text-left px-4 py-2 hover:bg-gray-200"
-                                            >
-                                                Cerrar sesión
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
+                {/* Contenedor del menú y opciones de usuario */}
+                <div className="flex items-center">
+                    {/* Menú de Navegación */}
+                    <nav
+                        className={`${isOpen ? 'block' : 'hidden'} absolute top-full left-0 w-full bg-primary-dark md:static md:block md:w-auto`}
+                        aria-label="Menú principal"
+                    >
+                        <ul className="flex flex-col md:flex-row md:items-center md:space-x-6 p-4 md:p-0">
+                            <li>
+                                <Link
+                                    to="/#home"
+                                    className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Inicio
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to="/#projects"
+                                    className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Proyectos
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to="/#about"
+                                    className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Sobre mí
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to="/blog"
+                                    className="block px-4 py-2 text-white hover:text-primary-light transition-colors"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Blog
+                                </Link>
+                            </li>
+                            {/* Toggle Dark Mode en pantallas pequeñas */}
+                            <li className="md:hidden">
+                                <ToggleDarkMode />
+                            </li>
+                            {/* Opciones de autenticación en pantallas pequeñas */}
+                            {!user && (
+                                <>
+                                    <li>
+                                        <Link
+                                            to="/signin"
+                                            className="block px-4 py-2 text-white hover:text-primary-light"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            Iniciar sesión
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            to="/signup"
+                                            className="block px-4 py-2 text-white hover:text-primary-light"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            Registrarse
+                                        </Link>
+                                    </li>
+                                </>
                             )}
-                        </>
-                    )}
-                </div>
+                        </ul>
+                    </nav>
 
-                {/* Botón de Menú para Móviles */}
-                <button
-                    onClick={toggleMenu}
-                    aria-label="Abrir menú"
-                    className="md:hidden focus:outline-none"
-                >
-                    {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-                </button>
+                    {/* Botones y Avatar */}
+                    <div className="flex items-center space-x-4">
+                        {/* Toggle Dark Mode en pantallas grandes */}
+                        <div className="hidden md:block">
+                            <ToggleDarkMode />
+                        </div>
+
+                        {/* Opciones de autenticación en pantallas grandes */}
+                        {!user ? (
+                            <div className="hidden md:flex space-x-4">
+                                <Link to="/signin" className="text-white hover:text-primary-light">
+                                    Iniciar sesión
+                                </Link>
+                                <Link to="/signup" className="text-white hover:text-primary-light">
+                                    Registrarse
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                {renderAvatar()}
+                                {/* Menú Desplegable del Avatar */}
+                                {menuOpen && (
+                                    <div className="absolute right-0 mt-2 bg-white text-black shadow-lg rounded-lg py-2 w-48 z-30">
+                                        <ul>
+                                            {user?.email === 'admin@correo.com' && (
+                                                <>
+                                                    <li>
+                                                        <Link
+                                                            to="/cms/create"
+                                                            className="block px-4 py-2 hover:bg-gray-200"
+                                                            onClick={() => setMenuOpen(false)}
+                                                        >
+                                                            Crear Blog
+                                                        </Link>
+                                                    </li>
+                                                    <li>
+                                                        <Link
+                                                            to="/cms/list"
+                                                            className="block px-4 py-2 hover:bg-gray-200"
+                                                            onClick={() => setMenuOpen(false)}
+                                                        >
+                                                            Lista de Blogs
+                                                        </Link>
+                                                    </li>
+                                                </>
+                                            )}
+                                            <li>
+                                                <button
+                                                    onClick={handleSignOut}
+                                                    className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                                                >
+                                                    Cerrar sesión
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Botón de Menú para Móviles */}
+                        <button
+                            onClick={toggleMenu}
+                            aria-label="Abrir menú"
+                            className="md:hidden focus:outline-none"
+                        >
+                            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
     );
 };
 
 export default Header;
+
 
