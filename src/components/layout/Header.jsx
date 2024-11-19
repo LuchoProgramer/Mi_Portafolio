@@ -180,6 +180,15 @@ const Header = () => {
                                             <>
                                                 <li>
                                                     <Link
+                                                        to="/cms"
+                                                        className="block px-4 py-2 hover:bg-gray-200"
+                                                        onClick={() => setMenuOpen(false)}
+                                                    >
+                                                        CMS Dashboard
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link
                                                         to="/cms/create"
                                                         className="block px-4 py-2 hover:bg-gray-200"
                                                         onClick={() => setMenuOpen(false)}
@@ -198,6 +207,7 @@ const Header = () => {
                                                 </li>
                                             </>
                                         )}
+
                                         <li>
                                             <button
                                                 onClick={handleSignOut}
