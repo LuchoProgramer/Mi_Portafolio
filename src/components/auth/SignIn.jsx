@@ -1,19 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { auth, db, googleProvider } from '../../firebaseConfig';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { Navigate, useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-const SignIn = () => {
-    const [user, loading] = useAuthState(auth);
-    const navigate = useNavigate();
-
-    if (loading) return <p>Cargando...</p>;
-    if (user) return <Navigate to="/cms" />;
+const SignIn = ({ onSuccess, switchToSignUp }) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleEmailSignIn = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
         const email = e.target.email.value;
         const password = e.target.password.value;
 
@@ -35,14 +32,18 @@ const SignIn = () => {
                 });
             }
 
-            navigate('/cms');
+            onSuccess(); // Notificar al Header que el inicio de sesión fue exitoso
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            alert('Error: ' + error.message);
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleGoogleSignIn = async () => {
+        setLoading(true);
+        setError('');
         try {
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
@@ -61,25 +62,59 @@ const SignIn = () => {
                 });
             }
 
-            navigate('/cms');
+            onSuccess(); // Notificar al Header que el inicio de sesión fue exitoso
         } catch (error) {
             console.error('Error al iniciar sesión con Google:', error);
-            alert('Error: ' + error.message);
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div>
-            <h1>Iniciar Sesión</h1>
-            <form onSubmit={handleEmailSignIn}>
-                <input type="email" name="email" placeholder="Correo electrónico" required />
-                <input type="password" name="password" placeholder="Contraseña" required />
-                <button type="submit">Iniciar Sesión</button>
+            <h2 className="text-xl font-semibold mb-4 text-center">Iniciar Sesión</h2>
+            {error && <p className="text-red-500 mb-2 text-center">{error}</p>}
+            <form onSubmit={handleEmailSignIn} className="flex flex-col space-y-4">
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Correo electrónico"
+                    required
+                    className="px-3 py-2 border rounded"
+                />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Contraseña"
+                    required
+                    className="px-3 py-2 border rounded"
+                />
+                <button
+                    type="submit"
+                    className="bg-primary-dark text-white py-2 rounded hover:bg-primary-light transition"
+                    disabled={loading}
+                >
+                    {loading ? 'Cargando...' : 'Iniciar Sesión'}
+                </button>
             </form>
-            <button onClick={handleGoogleSignIn}>Iniciar con Google</button>
+            <div className="mt-4 text-center">
+                <button
+                    onClick={handleGoogleSignIn}
+                    className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
+                    disabled={loading}
+                >
+                    {loading ? 'Cargando...' : 'Iniciar con Google'}
+                </button>
+            </div>
+            <p className="mt-4 text-center">
+                ¿No tienes una cuenta?{' '}
+                <button onClick={switchToSignUp} className="text-primary-dark hover:underline">
+                    Registrarse
+                </button>
+            </p>
         </div>
     );
 };
 
 export default SignIn;
-

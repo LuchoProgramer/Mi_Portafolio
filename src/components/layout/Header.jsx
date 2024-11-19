@@ -1,3 +1,4 @@
+// src/components/Header/Header.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -9,11 +10,16 @@ import { doc, getDoc } from 'firebase/firestore';
 // Importar los nuevos componentes
 import NavigationMenu from './NavigationMenu';
 import UserMenu from './UserMenu';
+import Modal from '../Modal/Modal'; // Ajusta la ruta según tu estructura
+import SignIn from '../auth/SignIn';
+import SignUp from '../auth/SignUp';
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false); // Para el menú hamburguesa
     const [user] = useAuthState(auth);
     const [role, setRole] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false); // Para el Modal
+    const [isSignIn, setIsSignIn] = useState(true); // Para alternar entre SignIn y SignUp
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -42,6 +48,28 @@ const Header = () => {
     }, [user]);
 
     const toggleMenu = () => setIsOpen(!isOpen);
+    const openModal = () => {
+        setIsModalOpen(true);
+        setIsSignIn(true); // Por defecto, mostrar SignIn
+    };
+    const openSignUpModal = () => {
+        setIsModalOpen(true);
+        setIsSignIn(false); // Mostrar SignUp
+    };
+    const closeModal = () => setIsModalOpen(false);
+
+    const handleSignInSuccess = () => {
+        closeModal();
+        // Puedes realizar acciones adicionales aquí si es necesario
+    };
+
+    const handleSignUpSuccess = () => {
+        closeModal();
+        // Puedes realizar acciones adicionales aquí si es necesario
+    };
+
+    const switchToSignUp = () => setIsSignIn(false);
+    const switchToSignIn = () => setIsSignIn(true);
 
     return (
         <header className="bg-primary-dark text-white p-4 fixed w-full z-20 shadow-lg">
@@ -50,7 +78,7 @@ const Header = () => {
                 <Link
                     to="/"
                     className="font-mono bg-gray-800 rounded flex items-center 
-          px-2 py-0.5 text-sm md:px-3 md:py-1 md:text-lg"
+                    px-2 py-0.5 text-sm md:px-3 md:py-1 md:text-lg"
                     aria-label="Inicio"
                 >
                     {'<Lucho_dev />'}
@@ -72,12 +100,18 @@ const Header = () => {
                     {/* Opciones de autenticación */}
                     {!user ? (
                         <div className="hidden md:flex space-x-4">
-                            <Link to="/signin" className="text-white hover:text-primary-light">
+                            <button
+                                onClick={openModal}
+                                className="text-white hover:text-primary-light"
+                            >
                                 Iniciar sesión
-                            </Link>
-                            <Link to="/signup" className="text-white hover:text-primary-light">
+                            </button>
+                            <button
+                                onClick={openSignUpModal}
+                                className="text-white hover:text-primary-light"
+                            >
                                 Registrarse
-                            </Link>
+                            </button>
                         </div>
                     ) : (
                         <UserMenu user={user} role={role} />
@@ -93,6 +127,15 @@ const Header = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Modal para Iniciar Sesión y Registrarse */}
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+                {isSignIn ? (
+                    <SignIn onSuccess={handleSignInSuccess} switchToSignUp={switchToSignUp} />
+                ) : (
+                    <SignUp onSuccess={handleSignUpSuccess} switchToSignIn={switchToSignIn} />
+                )}
+            </Modal>
         </header>
     );
 };
