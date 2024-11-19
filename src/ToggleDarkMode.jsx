@@ -1,4 +1,3 @@
-// src/components/ToggleDarkMode.jsx
 import React, { useContext } from 'react';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import ThemeContext from './ThemeContext';
@@ -15,10 +14,11 @@ function ToggleDarkMode() {
             {isDark ? (
                 <FiSun className="text-yellow-400 transform rotate-0 transition duration-300 ease-in-out" />
             ) : (
-                <FiMoon className="text-blue-500 transform rotate-180 transition duration-300 ease-in-out" />
+                <FiMoon className="text-blue-800 transform rotate-180 transition duration-300 ease-in-out" />
             )}
         </button>
     );
 }
 
 export default ToggleDarkMode;
+

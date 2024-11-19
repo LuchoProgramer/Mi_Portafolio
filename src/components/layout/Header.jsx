@@ -48,15 +48,19 @@ const Header = () => {
                 {/* Logo */}
                 <Link
                     to="/"
-                    className="font-mono bg-gray-800 px-3 py-1 rounded text-lg flex items-center"
+                    className="font-mono bg-gray-800 rounded flex items-center 
+               px-2 py-0.5 text-sm md:px-3 md:py-1 md:text-lg"
                     aria-label="Inicio"
                 >
                     {'<Lucho_dev />'}
-                    <span className="ml-1 w-1 h-5 bg-white animate-pulse"></span>
+                    <span
+                        className="ml-1 w-1 bg-white animate-pulse h-4 md:h-5"
+                    ></span>
                 </Link>
 
+
                 {/* Contenedor del menú y opciones de usuario */}
-                <div className="flex items-center">
+                <div className="flex items-center space-x-4">
                     {/* Menú de Navegación */}
                     <nav
                         className={`${isOpen ? 'block' : 'hidden'} absolute top-full left-0 w-full bg-primary-dark md:static md:block md:w-auto`}
@@ -99,14 +103,10 @@ const Header = () => {
                                     Blog
                                 </Link>
                             </li>
-                            {/* Toggle Dark Mode en pantallas pequeñas */}
-                            <li className="md:hidden">
-                                <ToggleDarkMode />
-                            </li>
                             {/* Opciones de autenticación en pantallas pequeñas */}
                             {!user && (
                                 <>
-                                    <li>
+                                    <li className="md:hidden">
                                         <Link
                                             to="/signin"
                                             className="block px-4 py-2 text-white hover:text-primary-light"
@@ -115,7 +115,7 @@ const Header = () => {
                                             Iniciar sesión
                                         </Link>
                                     </li>
-                                    <li>
+                                    <li className="md:hidden">
                                         <Link
                                             to="/signup"
                                             className="block px-4 py-2 text-white hover:text-primary-light"
@@ -129,75 +129,70 @@ const Header = () => {
                         </ul>
                     </nav>
 
-                    {/* Botones y Avatar */}
-                    <div className="flex items-center space-x-4">
-                        {/* Toggle Dark Mode en pantallas grandes */}
-                        <div className="hidden md:block">
-                            <ToggleDarkMode />
+                    {/* Toggle Dark Mode siempre visible */}
+                    <ToggleDarkMode />
+
+                    {/* Opciones de autenticación en pantallas grandes */}
+                    {!user ? (
+                        <div className="hidden md:flex space-x-4">
+                            <Link to="/signin" className="text-white hover:text-primary-light">
+                                Iniciar sesión
+                            </Link>
+                            <Link to="/signup" className="text-white hover:text-primary-light">
+                                Registrarse
+                            </Link>
                         </div>
+                    ) : (
+                        <div className="relative">
+                            {renderAvatar()}
+                            {/* Menú Desplegable del Avatar */}
+                            {menuOpen && (
+                                <div className="absolute right-0 mt-2 bg-white text-black shadow-lg rounded-lg py-2 w-48 z-30">
+                                    <ul>
+                                        {user?.email === 'admin@correo.com' && (
+                                            <>
+                                                <li>
+                                                    <Link
+                                                        to="/cms/create"
+                                                        className="block px-4 py-2 hover:bg-gray-200"
+                                                        onClick={() => setMenuOpen(false)}
+                                                    >
+                                                        Crear Blog
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link
+                                                        to="/cms/list"
+                                                        className="block px-4 py-2 hover:bg-gray-200"
+                                                        onClick={() => setMenuOpen(false)}
+                                                    >
+                                                        Lista de Blogs
+                                                    </Link>
+                                                </li>
+                                            </>
+                                        )}
+                                        <li>
+                                            <button
+                                                onClick={handleSignOut}
+                                                className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                                            >
+                                                Cerrar sesión
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                        {/* Opciones de autenticación en pantallas grandes */}
-                        {!user ? (
-                            <div className="hidden md:flex space-x-4">
-                                <Link to="/signin" className="text-white hover:text-primary-light">
-                                    Iniciar sesión
-                                </Link>
-                                <Link to="/signup" className="text-white hover:text-primary-light">
-                                    Registrarse
-                                </Link>
-                            </div>
-                        ) : (
-                            <div className="relative">
-                                {renderAvatar()}
-                                {/* Menú Desplegable del Avatar */}
-                                {menuOpen && (
-                                    <div className="absolute right-0 mt-2 bg-white text-black shadow-lg rounded-lg py-2 w-48 z-30">
-                                        <ul>
-                                            {user?.email === 'admin@correo.com' && (
-                                                <>
-                                                    <li>
-                                                        <Link
-                                                            to="/cms/create"
-                                                            className="block px-4 py-2 hover:bg-gray-200"
-                                                            onClick={() => setMenuOpen(false)}
-                                                        >
-                                                            Crear Blog
-                                                        </Link>
-                                                    </li>
-                                                    <li>
-                                                        <Link
-                                                            to="/cms/list"
-                                                            className="block px-4 py-2 hover:bg-gray-200"
-                                                            onClick={() => setMenuOpen(false)}
-                                                        >
-                                                            Lista de Blogs
-                                                        </Link>
-                                                    </li>
-                                                </>
-                                            )}
-                                            <li>
-                                                <button
-                                                    onClick={handleSignOut}
-                                                    className="block w-full text-left px-4 py-2 hover:bg-gray-200"
-                                                >
-                                                    Cerrar sesión
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Botón de Menú para Móviles */}
-                        <button
-                            onClick={toggleMenu}
-                            aria-label="Abrir menú"
-                            className="md:hidden focus:outline-none"
-                        >
-                            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-                        </button>
-                    </div>
+                    {/* Botón de Menú para Móviles */}
+                    <button
+                        onClick={toggleMenu}
+                        aria-label="Abrir menú"
+                        className="md:hidden focus:outline-none"
+                    >
+                        {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                    </button>
                 </div>
             </div>
         </header>
@@ -205,5 +200,3 @@ const Header = () => {
 };
 
 export default Header;
-
-
