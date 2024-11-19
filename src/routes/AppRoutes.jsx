@@ -45,12 +45,14 @@ const AppRoutes = () => {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
 
-            {/* Rutas protegidas */}
+            {/* Rutas protegidas con MainLayout */}
             <Route
                 path="/cms"
                 element={
                     <ProtectedRoute>
-                        <CMSDashboard />
+                        <MainLayout>
+                            <CMSDashboard />
+                        </MainLayout>
                     </ProtectedRoute>
                 }
             />
@@ -58,7 +60,9 @@ const AppRoutes = () => {
                 path="/cms/create"
                 element={
                     <ProtectedRoute>
-                        <BlogCreate />
+                        <MainLayout>
+                            <BlogCreate />
+                        </MainLayout>
                     </ProtectedRoute>
                 }
             />
@@ -66,7 +70,9 @@ const AppRoutes = () => {
                 path="/cms/list"
                 element={
                     <ProtectedRoute>
-                        <BlogList />
+                        <MainLayout>
+                            <BlogList />
+                        </MainLayout>
                     </ProtectedRoute>
                 }
             />
@@ -74,7 +80,9 @@ const AppRoutes = () => {
                 path="/cms/edit/:id"
                 element={
                     <ProtectedRoute>
-                        <BlogEdit />
+                        <MainLayout>
+                            <BlogEdit />
+                        </MainLayout>
                     </ProtectedRoute>
                 }
             />

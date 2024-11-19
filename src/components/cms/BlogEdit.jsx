@@ -81,7 +81,7 @@ const BlogEdit = () => {
     }
 
     return (
-        <div className="max-w-2xl mx-auto p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+        <div className="py-8 mt-8 max-w-2xl mx-auto p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">
                 Editar Blog
             </h2>

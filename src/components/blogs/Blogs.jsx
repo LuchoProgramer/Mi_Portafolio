@@ -15,7 +15,7 @@ const Blogs = () => {
     }, []);
 
     return (
-        <div className="py-8 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-700">
+        <div className="py-20 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-700">
             <h2 className="text-3xl font-bold text-center mb-6 text-gray-veryDark dark:text-gray-light">
                 Blog Posts
             </h2>

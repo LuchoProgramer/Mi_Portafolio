@@ -4,9 +4,9 @@ import { FiEdit, FiEye, FiPlusCircle } from "react-icons/fi";
 
 const CMSDashboard = () => {
     return (
-        <div className="min-h-screen bg-gray-light dark:bg-gray-veryDark p-6">
+        <div className="py-8 mt-8 min-h-screen bg-gray-light dark:bg-gray-veryDark p-6">
             {/* Título del Dashboard */}
-            <header className="mb-8">
+            <header className="mb-8 flex flex-col items-center justify-center text-center">
                 <h1 className="text-3xl font-bold text-gray-dark dark:text-gray-light">
                     Panel de Control
                 </h1>
@@ -14,6 +14,7 @@ const CMSDashboard = () => {
                     Administra tus blogs y configuraciones fácilmente.
                 </p>
             </header>
+
 
             {/* Opciones principales */}
             <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
