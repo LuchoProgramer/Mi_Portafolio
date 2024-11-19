@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../../firebaseConfig';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc } from "firebase/firestore";
+import Comments from './Comments';
 
 const BlogDetail = () => {
     const { id } = useParams();
@@ -38,6 +39,8 @@ const BlogDetail = () => {
                 className="prose prose-lg dark:prose-invert"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
             />
+            {/* Componente de Comentarios */}
+            <Comments blogId={blog.id} />
         </div>
     );
 };

@@ -5,9 +5,9 @@ import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
 const ProtectedRoute = ({ children }) => {
-    const [user, loading] = useAuthState(auth);
-    const [role, setRole] = useState(null);
-    const [fetchingRole, setFetchingRole] = useState(true);
+    const [user, loading] = useAuthState(auth); // Estado de autenticación
+    const [role, setRole] = useState(null); // Estado del rol del usuario
+    const [isInitializing, setIsInitializing] = useState(true); // Nuevo: Indica si se está inicializando
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -18,36 +18,42 @@ const ProtectedRoute = ({ children }) => {
 
                     if (userSnap.exists()) {
                         const userData = userSnap.data();
-                        setRole(userData.role);
+                        setRole(userData.role); // Asigna el rol obtenido
                     } else {
                         console.error("No se encontró el documento del usuario en Firestore.");
-                        setRole("viewer");
+                        setRole("viewer"); // Rol por defecto
                     }
                 } catch (error) {
                     console.error("Error al obtener el rol del usuario:", error);
-                    setRole(null);
                 } finally {
-                    setFetchingRole(false);
+                    setIsInitializing(false); // Finaliza la inicialización
                 }
-            } else {
-                setFetchingRole(false);
+            } else if (!loading) {
+                // Si no hay usuario y ya no está cargando, finaliza la inicialización
+                setIsInitializing(false);
             }
         };
 
         fetchUserRole();
-    }, [user]);
+    }, [user, loading]);
 
-    if (loading || fetchingRole) return <p>Cargando...</p>;
+    // Mostrar mensaje de carga mientras se inicializa
+    if (isInitializing) {
+        return <p>Cargando información del usuario...</p>;
+    }
 
+    // Redirigir si no hay usuario autenticado
     if (!user) {
         return <Navigate to="/signin" />;
     }
 
+    // Redirigir si el usuario no es admin
     if (role !== "admin") {
         alert("No tienes permisos para acceder a esta sección.");
         return <Navigate to="/" />;
     }
 
+    // Renderizar el contenido protegido si todo está en orden
     return children;
 };
 
