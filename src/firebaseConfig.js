@@ -22,7 +22,6 @@ const db = getFirestore(app); // Configurar Firestore
 // Exportar
 export { auth, googleProvider, db };
 
-
 // Función para crear un blog
 export const createBlog = async (blogData) => {
     try {

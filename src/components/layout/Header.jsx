@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../firebaseConfig';
+import { auth, db } from '../../firebaseConfig';
 import { signOut } from 'firebase/auth';
 import { FiMenu, FiX } from 'react-icons/fi';
 import ToggleDarkMode from '../../ToggleDarkMode';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false); // Para el menú hamburguesa
     const [menuOpen, setMenuOpen] = useState(false); // Para el menú del avatar
     const [user] = useAuthState(auth);
+    const [role, setRole] = useState(null);
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (user) {
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
+
+                    if (userSnap.exists()) {
+                        const userData = userSnap.data();
+                        setRole(userData.role);
+                    } else {
+                        console.error("No se encontró el documento del usuario en Firestore.");
+                        setRole(null);
+                    }
+                } catch (error) {
+                    console.error("Error al obtener el rol del usuario:", error);
+                    setRole(null);
+                }
+            } else {
+                setRole(null);
+            }
+        };
+
+        fetchUserRole();
+    }, [user]);
 
     const toggleMenu = () => setIsOpen(!isOpen);
     const toggleUserMenu = () => setMenuOpen(!menuOpen);
@@ -49,7 +77,7 @@ const Header = () => {
                 <Link
                     to="/"
                     className="font-mono bg-gray-800 rounded flex items-center 
-               px-2 py-0.5 text-sm md:px-3 md:py-1 md:text-lg"
+                   px-2 py-0.5 text-sm md:px-3 md:py-1 md:text-lg"
                     aria-label="Inicio"
                 >
                     {'<Lucho_dev />'}
@@ -57,7 +85,6 @@ const Header = () => {
                         className="ml-1 w-1 bg-white animate-pulse h-4 md:h-5"
                     ></span>
                 </Link>
-
 
                 {/* Contenedor del menú y opciones de usuario */}
                 <div className="flex items-center space-x-4">
@@ -149,7 +176,7 @@ const Header = () => {
                             {menuOpen && (
                                 <div className="absolute right-0 mt-2 bg-white text-black shadow-lg rounded-lg py-2 w-48 z-30">
                                     <ul>
-                                        {user?.email === 'admin@correo.com' && (
+                                        {role === 'admin' && (
                                             <>
                                                 <li>
                                                     <Link

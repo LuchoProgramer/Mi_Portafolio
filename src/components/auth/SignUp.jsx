@@ -1,7 +1,7 @@
 import React from 'react';
 import { auth, db, googleProvider } from '../../firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
@@ -14,16 +14,25 @@ const SignUp = () => {
         const name = e.target.name.value;
 
         try {
+            // Crear usuario en Firebase Authentication
             const result = await createUserWithEmailAndPassword(auth, email, password);
             const user = result.user;
 
-            // Guardar el usuario en Firestore
-            await setDoc(doc(db, 'users', user.uid), {
-                email: user.email,
-                name: name,
-                role: 'viewer',
-                createdAt: new Date(),
-            });
+            // Verificar si el usuario ya existe en Firestore
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                // Si no existe, crear el documento
+                await setDoc(userRef, {
+                    email: user.email,
+                    name: name || 'Usuario sin nombre',
+                    role: 'viewer',
+                    createdAt: new Date(),
+                });
+            } else {
+                console.log('El usuario ya existe en Firestore.');
+            }
 
             alert('Registro exitoso.');
             navigate('/');
@@ -35,16 +44,25 @@ const SignUp = () => {
 
     const handleGoogleSignUp = async () => {
         try {
+            // Iniciar sesión con Google
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
 
-            // Guardar el usuario en Firestore
-            await setDoc(doc(db, 'users', user.uid), {
-                email: user.email,
-                name: user.displayName,
-                role: 'viewer',
-                createdAt: new Date(),
-            });
+            // Verificar si el usuario ya existe en Firestore
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                // Si no existe, crear el documento
+                await setDoc(userRef, {
+                    email: user.email,
+                    name: user.displayName || 'Usuario sin nombre',
+                    role: 'viewer',
+                    createdAt: new Date(),
+                });
+            } else {
+                console.log('El usuario ya existe en Firestore.');
+            }
 
             navigate('/');
         } catch (error) {

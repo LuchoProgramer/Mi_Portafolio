@@ -40,7 +40,6 @@ const AppRoutes = () => {
                 }
             />
             {/* Rutas públicas */}
-            <Route path="/" element={<Home />} />
             <Route path="/blog" element={<MainLayout><Blogs /></MainLayout>} />
             <Route path="/blog/:id" element={<MainLayout><BlogDetail /></MainLayout>} />
             <Route path="/signin" element={<SignIn />} />

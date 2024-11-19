@@ -13,17 +13,19 @@ const ProtectedRoute = ({ children }) => {
         const fetchUserRole = async () => {
             if (user) {
                 try {
-                    const userRef = doc(db, 'users', user.uid);
+                    const userRef = doc(db, "users", user.uid);
                     const userSnap = await getDoc(userRef);
+
                     if (userSnap.exists()) {
                         const userData = userSnap.data();
                         setRole(userData.role);
                     } else {
-                        console.error('No se encontró el documento del usuario en Firestore.');
-                        setRole('viewer'); // Asignar rol por defecto si no se encuentra
+                        console.error("No se encontró el documento del usuario en Firestore.");
+                        setRole("viewer");
                     }
                 } catch (error) {
-                    console.error('Error al obtener el rol del usuario:', error);
+                    console.error("Error al obtener el rol del usuario:", error);
+                    setRole(null);
                 } finally {
                     setFetchingRole(false);
                 }
@@ -31,6 +33,7 @@ const ProtectedRoute = ({ children }) => {
                 setFetchingRole(false);
             }
         };
+
         fetchUserRole();
     }, [user]);
 
@@ -40,8 +43,8 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/signin" />;
     }
 
-    if (role !== 'admin') {
-        alert('No tienes permisos para acceder a esta sección.');
+    if (role !== "admin") {
+        alert("No tienes permisos para acceder a esta sección.");
         return <Navigate to="/" />;
     }
 
