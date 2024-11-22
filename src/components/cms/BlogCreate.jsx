@@ -1,43 +1,42 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import ThemeContext from '../../ThemeContext';
+import React, { useState } from 'react';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import { uploadImageToCloudinary } from '../../utils/cloudinaryUtils';
+import RichTextEditor from '../cms/RichTextEditor';
+import ImageUploader from '../cms/ImageUploader';
+import VideoEmbedder from '../cms/VideoEmbedder';
 
 const BlogCreate = () => {
     const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
+    const [blocks, setBlocks] = useState([]); // Arreglo de bloques dinámicos
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
 
-    const { isDark } = useContext(ThemeContext);
-    const editorRef = useRef(null);
+    // Agregar un bloque de texto
+    const handleAddText = () => {
+        setBlocks([...blocks, { type: 'text', content: '' }]);
+    };
 
-    useEffect(() => {
-        if (editorRef.current) {
-            const editor = editorRef.current;
-            editor.editing.view.change((writer) => {
-                writer.setStyle(
-                    "background-color",
-                    isDark ? "#2d3748" : "#ffffff",
-                    editor.editing.view.document.getRoot()
-                );
-                writer.setStyle(
-                    "color",
-                    isDark ? "#ffffff" : "#000000",
-                    editor.editing.view.document.getRoot()
-                );
-            });
-        }
-    }, [isDark]);
+    // Agregar un bloque de imagen
+    const handleAddImage = (url) => {
+        setBlocks([...blocks, { type: 'image', src: url }]);
+    };
+
+    // Agregar un bloque de video
+    const handleAddVideo = (url) => {
+        setBlocks([...blocks, { type: 'video', src: url }]);
+    };
+
+    // Manejar cambios en un bloque
+    const handleBlockChange = (index, updatedBlock) => {
+        const updatedBlocks = [...blocks];
+        updatedBlocks[index] = updatedBlock;
+        setBlocks(updatedBlocks);
+    };
 
     const handleCreate = async (e) => {
         e.preventDefault();
-        if (!title || !content) {
-            setError('Por favor, completa todos los campos.');
+        if (!title || blocks.length === 0) {
+            setError('Por favor, completa el título y agrega al menos un bloque.');
             return;
         }
         setIsSubmitting(true);
@@ -45,14 +44,12 @@ const BlogCreate = () => {
         try {
             await addDoc(collection(db, "blogs"), {
                 title,
-                content,
-                image: imageUrl,
+                blocks,
                 createdAt: new Date(),
             });
             alert('Blog creado exitosamente');
             setTitle('');
-            setContent('');
-            setImageUrl('');
+            setBlocks([]);
         } catch (error) {
             setError(`Hubo un error al crear el blog: ${error.message}`);
         } finally {
@@ -60,32 +57,8 @@ const BlogCreate = () => {
         }
     };
 
-    // Adaptador personalizado para CKEditor
-    class CloudinaryUploadAdapter {
-        constructor(loader) {
-            this.loader = loader;
-        }
-
-        async upload() {
-            const file = await this.loader.file;
-            const url = await uploadImageToCloudinary(file); // Subida a Cloudinary
-            setImageUrl(url); // Guardar URL en el estado
-            return { default: url };
-        }
-
-        abort() {
-            // Manejo de abort si es necesario
-        }
-    }
-
-    function CustomUploadAdapterPlugin(editor) {
-        editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-            return new CloudinaryUploadAdapter(loader);
-        };
-    }
-
     return (
-        <div className="py-12 mt-6 max-w-2xl mx-auto p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
+        <div className="py-12 mt-6 max-w-4xl mx-auto p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
             <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">
                 Crear Nuevo Blog
             </h2>
@@ -113,55 +86,42 @@ const BlogCreate = () => {
                     />
                 </div>
                 <div className="mb-6">
-                    <label
-                        htmlFor="content"
-                        className="block text-gray-700 dark:text-gray-200 font-semibold mb-2"
-                    >
-                        Contenido
-                    </label>
-                    <CKEditor
-                        editor={ClassicEditor}
-                        data={content}
-                        onReady={(editor) => {
-                            editorRef.current = editor;
-                            editor.editing.view.change((writer) => {
-                                writer.setStyle(
-                                    "background-color",
-                                    isDark ? "#2d3748" : "#ffffff",
-                                    editor.editing.view.document.getRoot()
-                                );
-                                writer.setStyle(
-                                    "color",
-                                    isDark ? "#ffffff" : "#000000",
-                                    editor.editing.view.document.getRoot()
-                                );
-                            });
-                        }}
-                        onChange={(event, editor) => {
-                            const data = editor.getData();
-                            setContent(data);
-                        }}
-                        config={{
-                            extraPlugins: [CustomUploadAdapterPlugin],
-                            toolbar: [
-                                'heading',
-                                '|',
-                                'bold',
-                                'italic',
-                                'link',
-                                'bulletedList',
-                                'numberedList',
-                                'blockQuote',
-                                '|',
-                                'imageUpload',
-                                'insertTable',
-                                'mediaEmbed',
-                                '|',
-                                'undo',
-                                'redo',
-                            ],
-                        }}
-                    />
+                    <div className="flex gap-4 mb-4">
+                        <button
+                            type="button"
+                            onClick={handleAddText}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                            Agregar Texto
+                        </button>
+                        <ImageUploader onUpload={handleAddImage} />
+                        <VideoEmbedder onEmbed={handleAddVideo} />
+                    </div>
+                    <div>
+                        {blocks.map((block, index) => (
+                            <div key={index} className="mb-4 p-4 border rounded bg-white">
+                                {block.type === 'text' && (
+                                    <RichTextEditor
+                                        value={block.content}
+                                        onChange={(content) =>
+                                            handleBlockChange(index, { ...block, content })
+                                        }
+                                    />
+                                )}
+                                {block.type === 'image' && (
+                                    <img src={block.src} alt="Imagen" className="max-w-full h-auto rounded" />
+                                )}
+                                {block.type === 'video' && (
+                                    <iframe
+                                        src={block.src}
+                                        title={`Video ${index}`}
+                                        className="w-full h-64 rounded"
+                                        allowFullScreen
+                                    ></iframe>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <button
                     type="submit"

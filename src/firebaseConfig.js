@@ -64,3 +64,35 @@ export const deleteBlog = async (id) => {
         console.error("Error al eliminar el blog: ", error);
     }
 };
+
+
+// Guardar layout
+export const saveAdminLayout = async (userId, layout) => {
+    try {
+        const docRef = doc(db, 'adminLayouts', userId);
+        await setDoc(docRef, { layout }, { merge: true });
+        console.log('Layout guardado exitosamente.');
+    } catch (error) {
+        console.error('Error guardando el layout:', error);
+    }
+};
+
+// Recuperar layout
+export const getAdminLayout = async (userId) => {
+    try {
+        const docRef = doc(db, 'adminLayouts', userId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return docSnap.data().layout;
+        } else {
+            console.log('No se encontró el layout, usando predeterminado.');
+            return [
+                { i: '1', x: 0, y: 0, w: 3, h: 2 },
+                { i: '2', x: 3, y: 0, w: 3, h: 2 },
+            ];
+        }
+    } catch (error) {
+        console.error('Error al recuperar el layout:', error);
+        return [];
+    }
+};
