@@ -18,7 +18,10 @@ const generateSlug = (title) => {
 const BlogCreate = () => {
     const navigate = useNavigate(); // Hook para redirección
     const [title, setTitle] = useState('');
-    const [blocks, setBlocks] = useState([]); // Arreglo de bloques dinámicos
+    const [blocks, setBlocks] = useState([]); // Bloques de contenido
+    const [layout, setLayout] = useState([]); // Layout del grid
+    const [selectedBlock, setSelectedBlock] = useState(null); // Bloque seleccionado para editar
+    const [isModalOpen, setIsModalOpen] = useState(false); // Control del modal
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
 
@@ -112,140 +115,158 @@ const BlogCreate = () => {
     };
 
     return (
-        <div className="py-12 mt-6 max-w-4xl mx-auto p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
-            <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">
-                Crear Nuevo Blog
-            </h2>
-            {error && (
-                <div className="mb-4 text-red-500 text-center">
-                    {error}
+        <div className="flex">
+            {/* Barra lateral */}
+            <div className="w-1/4 bg-gray-100 dark:bg-gray-800 p-4">
+                <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+                    Herramientas
+                </h3>
+                <div className="flex flex-col gap-4">
+                    <button
+                        onClick={() => addBlock('text')}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        Agregar Texto
+                    </button>
+                    <button
+                        onClick={() => addBlock('image')}
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    >
+                        Agregar Imagen
+                    </button>
+                    <button
+                        onClick={() => addBlock('video')}
+                        className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                    >
+                        Agregar Video
+                    </button>
                 </div>
             )}
-            <form onSubmit={handleCreate}>
-                {/* Campo de Título */}
-                <div className="mb-6">
-                    <label
-                        htmlFor="title"
-                        className="block text-gray-700 dark:text-gray-200 font-semibold mb-2"
-                    >
-                        Título
-                    </label>
-                    <input
-                        id="title"
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Título del blog"
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
-                        required
-                    />
-                </div>
-
-                {/* Contenedor de Bloques */}
-                <div className="mb-6">
-                    {/* Lista de Bloques */}
-                    <div className="space-y-4">
-                        {blocks.map((block, index) => (
-                            <div
-                                key={index}
-                                className="relative p-8 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-700 shadow-sm"
-                            >
-                                {/* Botón para eliminar el bloque */}
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveBlock(index)}
-                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition"
-                                    title="Eliminar bloque"
-                                >
-                                    X
-                                </button>
-
-                                {block.type === 'text' && (
-                                    <RichTextEditor
-                                        value={block.content}
-                                        onChange={(content) =>
-                                            handleBlockChange(index, { ...block, content })
-                                        }
-                                    />
-                                )}
-                                {block.type === 'image' && (
-                                    <div>
-                                        <img
-                                            src={block.src}
-                                            alt={block.alt || "Imagen del blog"}
-                                            className="max-w-full h-auto rounded"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={block.alt}
-                                            onChange={(e) =>
-                                                handleBlockChange(index, { ...block, alt: e.target.value })
-                                            }
-                                            placeholder="Descripción de la imagen"
-                                            className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
-                                        />
-                                    </div>
-                                )}
-                                {block.type === 'video' && (
-                                    <div className="relative" style={{ paddingTop: '56.25%' }}>
-                                        <iframe
-                                            src={block.src}
-                                            title={`Video ${index}`}
-                                            className="absolute top-0 left-0 w-full h-full rounded"
-                                            allowFullScreen
-                                        ></iframe>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                <form onSubmit={handleCreate}>
+                    {/* Campo de Título */}
+                    <div className="mb-6">
+                        <label
+                            htmlFor="title"
+                            className="block text-gray-700 dark:text-gray-200 font-semibold mb-2"
+                        >
+                            Título
+                        </label>
+                        <input
+                            id="title"
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Título del blog"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
+                            required
+                        />
                     </div>
 
-                    {/* Separador entre Bloques y Botones */}
-                    <div className="mt-6 border-t border-gray-300 dark:border-gray-700 pt-6">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                            Agregar Bloques
-                        </h3>
-                        <div className="flex flex-wrap gap-4 items-start">
-                            {/* Sección de Texto */}
-                            <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                    Texto
-                                </h4>
-                                <div className="flex-grow"></div>
-                                <button
-                                    type="button"
-                                    onClick={handleAddText}
-                                    className="mt-auto w-full h-12 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+                    {/* Contenedor de Bloques */}
+                    <div className="mb-6">
+                        {/* Lista de Bloques */}
+                        <div className="space-y-4">
+                            {blocks.map((block, index) => (
+                                <div
+                                    key={index}
+                                    className="relative p-8 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-700 shadow-sm"
                                 >
-                                    Agregar Texto
-                                </button>
-                            </div>
+                                    {/* Botón para eliminar el bloque */}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveBlock(index)}
+                                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition"
+                                        title="Eliminar bloque"
+                                    >
+                                        X
+                                    </button>
 
-                            {/* Sección de Imagen */}
-                            <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
-                                <ImageUploader onUpload={(url) => handleAddImage(url)} />
-                            </div>
+                                    {block.type === 'text' && (
+                                        <RichTextEditor
+                                            value={block.content}
+                                            onChange={(content) =>
+                                                handleBlockChange(index, { ...block, content })
+                                            }
+                                        />
+                                    )}
+                                    {block.type === 'image' && (
+                                        <div>
+                                            <img
+                                                src={block.src}
+                                                alt={block.alt || "Imagen del blog"}
+                                                className="max-w-full h-auto rounded"
+                                            />
+                                            <input
+                                                type="text"
+                                                value={block.alt}
+                                                onChange={(e) =>
+                                                    handleBlockChange(index, { ...block, alt: e.target.value })
+                                                }
+                                                placeholder="Descripción de la imagen"
+                                                className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
+                                            />
+                                        </div>
+                                    )}
+                                    {block.type === 'video' && (
+                                        <div className="relative" style={{ paddingTop: '56.25%' }}>
+                                            <iframe
+                                                src={block.src}
+                                                title={`Video ${index}`}
+                                                className="absolute top-0 left-0 w-full h-full rounded"
+                                                allowFullScreen
+                                            ></iframe>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
 
-                            {/* Sección de Video */}
-                            <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
-                                <VideoEmbedder onEmbed={handleAddVideo} />
+                        {/* Separador entre Bloques y Botones */}
+                        <div className="mt-6 border-t border-gray-300 dark:border-gray-700 pt-6">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+                                Agregar Bloques
+                            </h3>
+                            <div className="flex flex-wrap gap-4 items-start">
+                                {/* Sección de Texto */}
+                                <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
+                                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                                        Texto
+                                    </h4>
+                                    <div className="flex-grow"></div>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddText}
+                                        className="mt-auto w-full h-12 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+                                    >
+                                        Agregar Texto
+                                    </button>
+                                </div>
+
+                                {/* Sección de Imagen */}
+                                <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
+                                    <ImageUploader onUpload={(url) => handleAddImage(url)} />
+                                </div>
+
+                                {/* Sección de Video */}
+                                <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
+                                    <VideoEmbedder onEmbed={handleAddVideo} />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Botón de Envío */}
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md transition duration-200 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
-                        }`}
-                >
-                    {isSubmitting ? 'Guardando...' : 'Crear Blog'}
-                </button>
-            </form>
-        </div>
-    );
+                    {/* Botón de Envío */}
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md transition duration-200 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+                            }`}
+                    >
+                        {isSubmitting ? 'Guardando...' : 'Crear Blog'}
+                    </button>
+                </form>
+            </div>
+            );
 };
 
-export default BlogCreate;
+            export default BlogCreate;
