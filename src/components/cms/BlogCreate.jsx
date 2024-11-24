@@ -1,3 +1,4 @@
+// BlogCreate.jsx
 import React, { useState } from 'react';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
@@ -11,17 +12,17 @@ const BlogCreate = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
 
-    // Agregar un bloque de texto
+    // Agregar un bloque de texto al final
     const handleAddText = () => {
         setBlocks([...blocks, { type: 'text', content: '' }]);
     };
 
-    // Agregar un bloque de imagen
+    // Agregar un bloque de imagen al final
     const handleAddImage = (url) => {
         setBlocks([...blocks, { type: 'image', src: url }]);
     };
 
-    // Agregar un bloque de video
+    // Agregar un bloque de video al final
     const handleAddVideo = (url) => {
         setBlocks([...blocks, { type: 'video', src: url }]);
     };
@@ -35,7 +36,7 @@ const BlogCreate = () => {
 
     const handleCreate = async (e) => {
         e.preventDefault();
-        if (!title || blocks.length === 0) {
+        if (!title.trim() || blocks.length === 0) {
             setError('Por favor, completa el título y agrega al menos un bloque.');
             return;
         }
@@ -43,7 +44,7 @@ const BlogCreate = () => {
         setError('');
         try {
             await addDoc(collection(db, "blogs"), {
-                title,
+                title: title.trim(),
                 blocks,
                 createdAt: new Date(),
             });
@@ -68,7 +69,8 @@ const BlogCreate = () => {
                 </div>
             )}
             <form onSubmit={handleCreate}>
-                <div className="mb-4">
+                {/* Campo de Título */}
+                <div className="mb-6">
                     <label
                         htmlFor="title"
                         className="block text-gray-700 dark:text-gray-200 font-semibold mb-2"
@@ -85,21 +87,13 @@ const BlogCreate = () => {
                         required
                     />
                 </div>
+
+                {/* Contenedor de Bloques */}
                 <div className="mb-6">
-                    <div className="flex gap-4 mb-4">
-                        <button
-                            type="button"
-                            onClick={handleAddText}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        >
-                            Agregar Texto
-                        </button>
-                        <ImageUploader onUpload={handleAddImage} />
-                        <VideoEmbedder onEmbed={handleAddVideo} />
-                    </div>
-                    <div>
+                    {/* Lista de Bloques */}
+                    <div className="space-y-4">
                         {blocks.map((block, index) => (
-                            <div key={index} className="mb-4 p-4 border rounded bg-white">
+                            <div key={index} className="p-4 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-700 shadow-sm">
                                 {block.type === 'text' && (
                                     <RichTextEditor
                                         value={block.content}
@@ -112,17 +106,39 @@ const BlogCreate = () => {
                                     <img src={block.src} alt="Imagen" className="max-w-full h-auto rounded" />
                                 )}
                                 {block.type === 'video' && (
-                                    <iframe
-                                        src={block.src}
-                                        title={`Video ${index}`}
-                                        className="w-full h-64 rounded"
-                                        allowFullScreen
-                                    ></iframe>
+                                    <div className="relative" style={{ paddingTop: '56.25%' }}>
+                                        <iframe
+                                            src={block.src}
+                                            title={`Video ${index}`}
+                                            className="absolute top-0 left-0 w-full h-full rounded"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
                                 )}
                             </div>
                         ))}
                     </div>
+
+                    {/* Separador entre Bloques y Botones */}
+                    <div className="mt-6 border-t border-gray-300 dark:border-gray-700 pt-6">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+                            Agregar Bloques
+                        </h3>
+                        <div className="flex flex-wrap gap-4">
+                            <button
+                                type="button"
+                                onClick={handleAddText}
+                                className="flex-1 min-w-[120px] bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                            >
+                                Agregar Texto
+                            </button>
+                            <ImageUploader onUpload={handleAddImage} />
+                            <VideoEmbedder onEmbed={handleAddVideo} />
+                        </div>
+                    </div>
                 </div>
+
+                {/* Botón de Envío */}
                 <button
                     type="submit"
                     disabled={isSubmitting}

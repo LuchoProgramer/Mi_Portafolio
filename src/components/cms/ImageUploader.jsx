@@ -1,3 +1,4 @@
+// ImageUploader.jsx
 import React, { useState } from 'react';
 import { uploadImageToCloudinary } from '../../utils/cloudinaryUtils';
 
@@ -33,18 +34,18 @@ const ImageUploader = ({ onUpload }) => {
     };
 
     return (
-        <div className="image-uploader">
-            <label className="block mb-2 font-bold text-gray-700">
+        <div className="flex-1 min-w-[120px] flex flex-col">
+            <label className="block mb-2 font-bold text-gray-700 dark:text-gray-200">
                 Seleccionar Imagen
             </label>
             <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                className="mb-4"
+                className="mb-2"
             />
             {preview && (
-                <div className="mb-4">
+                <div className="mb-2">
                     <img
                         src={preview}
                         alt="Vista previa"
@@ -56,7 +57,7 @@ const ImageUploader = ({ onUpload }) => {
                 onClick={handleUpload}
                 disabled={!file || isUploading}
                 className={`py-2 px-4 text-white font-bold rounded ${isUploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-                    }`}
+                    } transition`}
             >
                 {isUploading ? 'Subiendo...' : 'Subir Imagen'}
             </button>
