@@ -22,28 +22,18 @@ function MainLayout({ children, title, description, keywords, image, url }) {
                 />
                 <meta name="keywords" content="Luis Viteri, portafolio, desarrollador full stack, React, Django, soluciones tecnológicas, desarrollo web personalizado, programación" />
 
-                {/* Open Graph para redes sociales */}
+                {/* Open Graph Tags */}
                 <meta property="og:title" content="LuchoDev | Desarrollador Full Stack" />
-                <meta property="og:description" content="Portafolio de Luis Viteri. Soluciones personalizadas en desarrollo web con React y Firebase." />
-                <meta property="og:image" content="https://res.cloudinary.com/dltfsttr7/image/fetch/w_1200,h_630,c_fill,f_auto,q_auto/https://luchodev.netlify.app/" />
+                <meta property="og:description" content="Explora el portafolio de Luis Viteri. Soluciones personalizadas en desarrollo web con React y Firebase." />
+                <meta property="og:image" content="https://res.cloudinary.com/dltfsttr7/image/upload/v1732480322/Screenshot_2024-11-24_at_15-31-19_netlify.app.jpg_JPEG_Image_1280_4301_pixels_l1ugdf.png" />
                 <meta property="og:url" content="https://luchodev.netlify.app/" />
                 <meta property="og:type" content="website" />
 
                 {/* Twitter Cards */}
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={title || "LuchoDev | Desarrollador Full Stack"} />
-                <meta
-                    name="twitter:description"
-                    content={
-                        description || "Explora el portafolio de Luis Viteri. Soluciones personalizadas en desarrollo web con React y Firebase."
-                    }
-                />
-                <meta
-                    name="twitter:image"
-                    content={
-                        image || "https://res.cloudinary.com/dltfsttr7/image/fetch/w_1200,h_630,c_fill,f_auto,q_auto/https://luchodev.netlify.app/"
-                    }
-                />
+                <meta name="twitter:title" content="LuchoDev | Desarrollador Full Stack" />
+                <meta name="twitter:description" content="Explora el portafolio de Luis Viteri. Soluciones personalizadas en desarrollo web con React y Firebase." />
+                <meta name="twitter:image" content="https://res.cloudinary.com/dltfsttr7/image/upload/v1732480322/Screenshot_2024-11-24_at_15-31-19_netlify.app.jpg_JPEG_Image_1280_4301_pixels_l1ugdf.png" />
             </Helmet>
 
             {/* Estructura del layout */}
