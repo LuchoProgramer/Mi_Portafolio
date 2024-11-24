@@ -7,10 +7,10 @@ const BlogCard = ({ blog }) => {
             <div className="overflow-hidden rounded-t-lg">
                 <img
                     src={blog.image || '/assets/default-image.jpg'}
-                    alt={blog.title || 'Sin título'}
+                    alt={blog.alt || blog.title || 'Imagen del blog'} // Usar el atributo alt del blog si está disponible
                     className="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-110"
                     loading="lazy"
-                    onError={(e) => (e.target.src = '/assets/default-image.jpg')}
+                    onError={(e) => (e.target.src = '/assets/default-image.jpg')} // Imagen de respaldo en caso de error
                 />
             </div>
             {/* Título */}
@@ -23,8 +23,8 @@ const BlogCard = ({ blog }) => {
             </p>
             {/* Enlace */}
             <a
-                href={`/blog/${blog.id}`}
-                aria-label={`Leer más sobre ${blog.title}`}
+                href={`/blog/${blog.slug}`} // Usar el slug en lugar del id
+                aria-label={`Leer más sobre ${blog.title || 'este blog'}`}
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-400 self-end transition-colors duration-200"
             >
                 Leer más

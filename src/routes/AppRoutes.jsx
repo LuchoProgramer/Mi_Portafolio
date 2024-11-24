@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
-import Blogs from "../components/blogs/Blogs"
+import Blogs from "../components/blogs/Blogs";
 import SignIn from "../components/auth/SignIn";
 import SignUp from "../components/auth/SignUp";
 import CMSDashboard from "../components/cms/CMSDashboard";
@@ -17,7 +17,7 @@ import Projects from "../pages/Projects";
 import Experience from "../pages/Experience";
 import Languages from "../pages/Languages";
 import Hobbies from "../pages/Hobbies";
-import TravelMap from "../pages/TravelMap"
+import TravelMap from "../pages/TravelMap";
 import BlogDetail from "../components/blogs/BlogDetail";
 
 const AppRoutes = () => {
@@ -41,7 +41,7 @@ const AppRoutes = () => {
             />
             {/* Rutas públicas */}
             <Route path="/blog" element={<MainLayout><Blogs /></MainLayout>} />
-            <Route path="/blog/:id" element={<MainLayout><BlogDetail /></MainLayout>} />
+            <Route path="/blog/:slug" element={<MainLayout><BlogDetail /></MainLayout>} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
 

@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { db } from "../../firebaseConfig";
 import RichTextEditor from '../cms/RichTextEditor';
 import ImageUploader from '../cms/ImageUploader';
 import VideoEmbedder from '../cms/VideoEmbedder';
 
+// Función para generar slugs
+const generateSlug = (title) => {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '') // Elimina caracteres no alfanuméricos
+        .trim()
+        .replace(/\s+/g, '-'); // Reemplaza espacios por guiones
+};
+
 const BlogCreate = () => {
+    const navigate = useNavigate(); // Hook para redirección
     const [title, setTitle] = useState('');
     const [blocks, setBlocks] = useState([]); // Arreglo de bloques dinámicos
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,9 +27,10 @@ const BlogCreate = () => {
         setBlocks([...blocks, { type: 'text', content: '' }]);
     };
 
-    // Agregar un bloque de imagen
+    // Agregar un bloque de imagen con texto alt
     const handleAddImage = (url) => {
-        setBlocks([...blocks, { type: 'image', src: url }]);
+        const alt = prompt("Describe brevemente la imagen (para SEO y accesibilidad):") || "Imagen relacionada con el blog";
+        setBlocks([...blocks, { type: 'image', src: url, alt }]);
     };
 
     // Agregar un bloque de video
@@ -45,10 +57,20 @@ const BlogCreate = () => {
             setError('Por favor, completa el título y agrega al menos un bloque.');
             return;
         }
+
         setIsSubmitting(true);
         setError('');
 
         try {
+            // Generar el slug
+            let slug = generateSlug(title);
+
+            // Verificar si el slug ya existe en la base de datos
+            const slugExists = await checkSlugExists(slug);
+            if (slugExists) {
+                slug = `${slug}-${Date.now()}`; // Añadir un sufijo único si el slug ya existe
+            }
+
             // Primera imagen del blog como destacada
             const firstImageBlock = blocks.find((block) => block.type === 'image');
             const image = firstImageBlock ? firstImageBlock.src : null;
@@ -62,6 +84,7 @@ const BlogCreate = () => {
             // Guardar el blog en Firestore
             await addDoc(collection(db, "blogs"), {
                 title: title.trim(),
+                slug, // Guardar el slug generado
                 blocks,
                 image,
                 excerpt,
@@ -71,11 +94,21 @@ const BlogCreate = () => {
             alert('Blog creado exitosamente');
             setTitle('');
             setBlocks([]);
+
+            // Redirigir al listado de blogs
+            navigate('/cms/list');
         } catch (error) {
             setError(`Hubo un error al crear el blog: ${error.message}`);
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    // Función para verificar unicidad del slug
+    const checkSlugExists = async (slug) => {
+        const q = query(collection(db, "blogs"), where("slug", "==", slug));
+        const querySnapshot = await getDocs(q);
+        return !querySnapshot.empty; // Devuelve `true` si el slug ya existe
     };
 
     return (
@@ -136,11 +169,22 @@ const BlogCreate = () => {
                                     />
                                 )}
                                 {block.type === 'image' && (
-                                    <img
-                                        src={block.src}
-                                        alt="Imagen"
-                                        className="max-w-full h-auto rounded"
-                                    />
+                                    <div>
+                                        <img
+                                            src={block.src}
+                                            alt={block.alt || "Imagen del blog"}
+                                            className="max-w-full h-auto rounded"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={block.alt}
+                                            onChange={(e) =>
+                                                handleBlockChange(index, { ...block, alt: e.target.value })
+                                            }
+                                            placeholder="Descripción de la imagen"
+                                            className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
+                                        />
+                                    </div>
                                 )}
                                 {block.type === 'video' && (
                                     <div className="relative" style={{ paddingTop: '56.25%' }}>
@@ -179,7 +223,7 @@ const BlogCreate = () => {
 
                             {/* Sección de Imagen */}
                             <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
-                                <ImageUploader onUpload={handleAddImage} />
+                                <ImageUploader onUpload={(url) => handleAddImage(url)} />
                             </div>
 
                             {/* Sección de Video */}

@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, query, where, getDocs, collection } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import RichTextEditor from "../cms/RichTextEditor";
 import ImageUploader from "../cms/ImageUploader";
 import VideoEmbedder from "../cms/VideoEmbedder";
 
+// Función para generar slugs
+const generateSlug = (title) => {
+    return title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '') // Eliminar caracteres especiales
+        .trim()
+        .replace(/\s+/g, '-'); // Reemplazar espacios por guiones
+};
+
 const BlogEdit = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [title, setTitle] = useState("");
-    const [blocks, setBlocks] = useState([]); // Arreglo de bloques dinámicos
+    const [blocks, setBlocks] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
 
@@ -33,28 +42,6 @@ const BlogEdit = () => {
         fetchBlog();
     }, [id]);
 
-    // Agregar un bloque de texto al final
-    const handleAddText = () => {
-        setBlocks([...blocks, { type: "text", content: "" }]);
-    };
-
-    // Agregar un bloque de imagen al final
-    const handleAddImage = (url) => {
-        setBlocks([...blocks, { type: "image", src: url }]);
-    };
-
-    // Agregar un bloque de video al final
-    const handleAddVideo = (url) => {
-        setBlocks([...blocks, { type: "video", src: url }]);
-    };
-
-    // Manejar cambios en un bloque
-    const handleBlockChange = (index, updatedBlock) => {
-        const updatedBlocks = [...blocks];
-        updatedBlocks[index] = updatedBlock;
-        setBlocks(updatedBlocks);
-    };
-
     const handleUpdate = async (e) => {
         e.preventDefault();
         if (!title.trim() || blocks.length === 0) {
@@ -65,6 +52,15 @@ const BlogEdit = () => {
         setError("");
 
         try {
+            // Generar un nuevo slug basado en el título actualizado
+            let newSlug = generateSlug(title);
+
+            // Verificar si el slug ya existe y no pertenece a otro blog
+            const slugExists = await checkSlugExists(newSlug, id);
+            if (slugExists) {
+                newSlug = `${newSlug}-${Date.now()}`; // Agregar un sufijo único si ya existe
+            }
+
             const firstImageBlock = blocks.find((block) => block.type === "image");
             const image = firstImageBlock ? firstImageBlock.src : null;
 
@@ -73,21 +69,33 @@ const BlogEdit = () => {
                 ? firstTextBlock.content.replace(/<[^>]*>?/gm, "").substring(0, 100) + "..."
                 : "No hay contenido disponible.";
 
+            // Actualizar el blog en Firestore
             await updateDoc(doc(db, "blogs", id), {
                 title: title.trim(),
+                slug: newSlug,
                 blocks,
                 image,
                 excerpt,
             });
 
             alert("Blog actualizado exitosamente");
-            navigate("/cms/list");
+
+            // Redirigir al nuevo slug
+            navigate(`/blog/${newSlug}`);
         } catch (error) {
             console.error("Error al actualizar el blog:", error);
             setError("Hubo un error al actualizar el blog.");
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    // Verificar si un slug ya existe en Firestore
+    const checkSlugExists = async (slug, currentId) => {
+        const q = query(collection(db, "blogs"), where("slug", "==", slug));
+        const querySnapshot = await getDocs(q);
+        // Si el slug ya existe y no pertenece al blog actual, es duplicado
+        return querySnapshot.docs.some((doc) => doc.id !== currentId);
     };
 
     return (
@@ -133,11 +141,22 @@ const BlogEdit = () => {
                                     />
                                 )}
                                 {block.type === "image" && (
-                                    <img
-                                        src={block.src}
-                                        alt="Imagen"
-                                        className="max-w-full h-auto rounded"
-                                    />
+                                    <div>
+                                        <img
+                                            src={block.src}
+                                            alt={block.alt || "Imagen del blog"}
+                                            className="max-w-full h-auto rounded"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={block.alt}
+                                            onChange={(e) =>
+                                                handleBlockChange(index, { ...block, alt: e.target.value })
+                                            }
+                                            placeholder="Descripción de la imagen"
+                                            className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
+                                        />
+                                    </div>
                                 )}
                                 {block.type === "video" && (
                                     <div className="relative" style={{ paddingTop: "56.25%" }}>

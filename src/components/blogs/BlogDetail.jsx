@@ -1,30 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebaseConfig';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import Comments from './Comments';
 
 const BlogDetail = () => {
-    const { id } = useParams();
+    const { slug } = useParams(); // Obtener el slug desde la URL
     const [blog, setBlog] = useState(null);
 
     useEffect(() => {
         const fetchBlog = async () => {
             try {
-                const docRef = doc(db, 'blogs', id);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    setBlog({ id: docSnap.id, ...docSnap.data() });
+                // Crear una consulta para buscar por slug
+                const blogsRef = collection(db, 'blogs');
+                const q = query(blogsRef, where("slug", "==", slug));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    const blogDoc = querySnapshot.docs[0]; // Obtener el primer documento encontrado
+                    setBlog({ id: blogDoc.id, ...blogDoc.data() });
                 } else {
-                    console.log("No existe tal documento!");
+                    console.log("No se encontró un blog con este slug.");
                 }
             } catch (error) {
-                console.error("Error al obtener el documento:", error);
+                console.error("Error al obtener el blog:", error);
             }
         };
 
         fetchBlog();
-    }, [id]);
+    }, [slug]);
 
     if (!blog) return <p>Cargando los datos del blog...</p>;
 
@@ -50,7 +54,7 @@ const BlogDetail = () => {
                             <div key={index} className="flex justify-center">
                                 <img
                                     src={block.src}
-                                    alt={`Imagen ${index}`}
+                                    alt={block.alt || `Imagen del blog ${index}`} // Usar el texto alternativo almacenado
                                     className="rounded-lg shadow-md"
                                 />
                             </div>
