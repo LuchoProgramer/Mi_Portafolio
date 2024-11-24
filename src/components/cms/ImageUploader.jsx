@@ -1,6 +1,5 @@
-// ImageUploader.jsx
 import React, { useState } from 'react';
-import { uploadImageToCloudinary } from '../../utils/cloudinaryUtils';
+import { uploadImageToCloudinary, getTransformedImageUrl } from '../../utils/cloudinaryUtils';
 
 const ImageUploader = ({ onUpload }) => {
     const [file, setFile] = useState(null);
@@ -20,8 +19,18 @@ const ImageUploader = ({ onUpload }) => {
 
         setIsUploading(true);
         try {
-            const uploadedUrl = await uploadImageToCloudinary(file); // Subir a Cloudinary
-            onUpload(uploadedUrl); // Notificar al componente padre la URL subida
+            // Subir la imagen a Cloudinary
+            const uploadedUrl = await uploadImageToCloudinary(file);
+
+            // Generar una URL transformada para usar dimensiones consistentes
+            const transformedUrl = getTransformedImageUrl(uploadedUrl, {
+                width: 600,
+                height: 400,
+                crop: 'fill',
+                gravity: 'auto',
+            });
+
+            onUpload(transformedUrl); // Notificar al componente padre la URL transformada
             alert('Imagen subida exitosamente');
         } catch (error) {
             console.error('Error al subir la imagen:', error);
@@ -49,7 +58,7 @@ const ImageUploader = ({ onUpload }) => {
                     <img
                         src={preview}
                         alt="Vista previa"
-                        className="max-w-full h-auto rounded shadow"
+                        className="w-full h-[300px] object-cover rounded shadow" // Dimensiones consistentes en la vista previa
                     />
                 </div>
             )}
