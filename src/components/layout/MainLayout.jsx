@@ -23,20 +23,27 @@ function MainLayout({ children, title, description, keywords, image, url }) {
                 <meta name="keywords" content="Luis Viteri, portafolio, desarrollador full stack, React, Django, soluciones tecnológicas, desarrollo web personalizado, programación" />
 
                 {/* Open Graph para redes sociales */}
-                <meta property="og:title" content="Portafolio de Luis Viteri | Desarrollador Full Stack" />
-                <meta
-                    property="og:description"
-                    content="Explora soluciones personalizadas en desarrollo web con React y Django. ¡Conéctate conmigo para crear tu próximo proyecto!"
-                />
-                <meta property="og:image" content="https://misitioweb.com/static/images/portfolio-home.jpg" />
-                <meta property="og:url" content="https://misitioweb.com" />
+                <meta property="og:title" content="LuchoDev | Desarrollador Full Stack" />
+                <meta property="og:description" content="Portafolio de Luis Viteri. Soluciones personalizadas en desarrollo web con React y Firebase." />
+                <meta property="og:image" content="https://res.cloudinary.com/dltfsttr7/image/fetch/w_1200,h_630,c_fill,f_auto,q_auto/https://luchodev.netlify.app/" />
+                <meta property="og:url" content="https://luchodev.netlify.app/" />
                 <meta property="og:type" content="website" />
 
                 {/* Twitter Cards */}
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={title || "Mi Sitio Web"} />
-                <meta name="twitter:description" content={description || "Bienvenido a mi sitio web."} />
-                <meta name="twitter:image" content={image || "/default-image.jpg"} />
+                <meta name="twitter:title" content={title || "LuchoDev | Desarrollador Full Stack"} />
+                <meta
+                    name="twitter:description"
+                    content={
+                        description || "Explora el portafolio de Luis Viteri. Soluciones personalizadas en desarrollo web con React y Firebase."
+                    }
+                />
+                <meta
+                    name="twitter:image"
+                    content={
+                        image || "https://res.cloudinary.com/dltfsttr7/image/fetch/w_1200,h_630,c_fill,f_auto,q_auto/https://luchodev.netlify.app/"
+                    }
+                />
             </Helmet>
 
             {/* Estructura del layout */}
