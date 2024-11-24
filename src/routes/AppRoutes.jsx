@@ -19,6 +19,7 @@ import Languages from "../pages/Languages";
 import Hobbies from "../pages/Hobbies";
 import TravelMap from "../pages/TravelMap";
 import BlogDetail from "../components/blogs/BlogDetail";
+import SEO from "../components/SEO";
 
 const AppRoutes = () => {
     return (
@@ -28,6 +29,13 @@ const AppRoutes = () => {
                 path="/"
                 element={
                     <MainLayout>
+                        {/* Agregar meta etiquetas dinámicas */}
+                        <SEO
+                            title="LuchoDev | Inicio"
+                            description="Explora el portafolio de Luis Viteri. Soluciones personalizadas en desarrollo web con React y Firebase."
+                            image="https://res.cloudinary.com/dltfsttr7/image/upload/v1732480322/Screenshot_2024-11-24_at_15-31-19_netlify.app.jpg_JPEG_Image_1280_4301_pixels_l1ugdf.png"
+                            url="https://luchodev.netlify.app/"
+                        />
                         <Home />
                         <AboutMe />
                         <Technologies />
