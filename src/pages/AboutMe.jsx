@@ -1,4 +1,3 @@
-// src/components/AboutMe.jsx
 import React from 'react';
 import { FiGlobe, FiBookOpen, FiCode } from 'react-icons/fi';
 
@@ -14,7 +13,7 @@ function AboutMe() {
                     {/* Imagen */}
                     <div className="md:w-1/3 flex justify-center mb-6 md:mb-0">
                         <img
-                            src="/path/to/your/photo.jpg" // Reemplaza con la ruta correcta a tu foto
+                            src="https://res.cloudinary.com/dltfsttr7/image/upload/v1732416634/file-Jsh2amEnMytw75DmwtHCX4_1_kde3iy.webp"
                             alt="Foto de Luis Viteri"
                             className="w-48 h-48 rounded-full object-cover shadow-lg transition-transform duration-300 ease-in-out hover:scale-105"
                         />
@@ -62,3 +61,4 @@ function AboutMe() {
 }
 
 export default AboutMe;
+

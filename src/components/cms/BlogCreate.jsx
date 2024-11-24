@@ -1,4 +1,3 @@
-// BlogCreate.jsx
 import React, { useState } from 'react';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
@@ -12,17 +11,17 @@ const BlogCreate = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
 
-    // Agregar un bloque de texto al final
+    // Agregar un bloque de texto
     const handleAddText = () => {
         setBlocks([...blocks, { type: 'text', content: '' }]);
     };
 
-    // Agregar un bloque de imagen al final
+    // Agregar un bloque de imagen
     const handleAddImage = (url) => {
         setBlocks([...blocks, { type: 'image', src: url }]);
     };
 
-    // Agregar un bloque de video al final
+    // Agregar un bloque de video
     const handleAddVideo = (url) => {
         setBlocks([...blocks, { type: 'video', src: url }]);
     };
@@ -31,6 +30,12 @@ const BlogCreate = () => {
     const handleBlockChange = (index, updatedBlock) => {
         const updatedBlocks = [...blocks];
         updatedBlocks[index] = updatedBlock;
+        setBlocks(updatedBlocks);
+    };
+
+    // Eliminar un bloque
+    const handleRemoveBlock = (index) => {
+        const updatedBlocks = blocks.filter((_, i) => i !== index);
         setBlocks(updatedBlocks);
     };
 
@@ -44,17 +49,17 @@ const BlogCreate = () => {
         setError('');
 
         try {
-            // Obtén la primera imagen del blog como destacada
+            // Primera imagen del blog como destacada
             const firstImageBlock = blocks.find((block) => block.type === 'image');
             const image = firstImageBlock ? firstImageBlock.src : null;
 
-            // Genera un resumen a partir del primer bloque de texto
+            // Generar resumen del primer bloque de texto
             const firstTextBlock = blocks.find((block) => block.type === 'text');
             const excerpt = firstTextBlock
                 ? firstTextBlock.content.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...'
                 : 'No hay contenido disponible.';
 
-            // Guarda el blog en Firestore
+            // Guardar el blog en Firestore
             await addDoc(collection(db, "blogs"), {
                 title: title.trim(),
                 blocks,
@@ -108,7 +113,20 @@ const BlogCreate = () => {
                     {/* Lista de Bloques */}
                     <div className="space-y-4">
                         {blocks.map((block, index) => (
-                            <div key={index} className="p-4 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-700 shadow-sm">
+                            <div
+                                key={index}
+                                className="relative p-8 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-700 shadow-sm"
+                            >
+                                {/* Botón para eliminar el bloque */}
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveBlock(index)}
+                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition"
+                                    title="Eliminar bloque"
+                                >
+                                    X
+                                </button>
+
                                 {block.type === 'text' && (
                                     <RichTextEditor
                                         value={block.content}
@@ -118,7 +136,11 @@ const BlogCreate = () => {
                                     />
                                 )}
                                 {block.type === 'image' && (
-                                    <img src={block.src} alt="Imagen" className="max-w-full h-auto rounded" />
+                                    <img
+                                        src={block.src}
+                                        alt="Imagen"
+                                        className="max-w-full h-auto rounded"
+                                    />
                                 )}
                                 {block.type === 'video' && (
                                     <div className="relative" style={{ paddingTop: '56.25%' }}>
@@ -139,16 +161,31 @@ const BlogCreate = () => {
                         <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
                             Agregar Bloques
                         </h3>
-                        <div className="flex flex-wrap gap-4">
-                            <button
-                                type="button"
-                                onClick={handleAddText}
-                                className="flex-1 min-w-[120px] bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-                            >
-                                Agregar Texto
-                            </button>
-                            <ImageUploader onUpload={handleAddImage} />
-                            <VideoEmbedder onEmbed={handleAddVideo} />
+                        <div className="flex flex-wrap gap-4 items-start">
+                            {/* Sección de Texto */}
+                            <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                                    Texto
+                                </h4>
+                                <div className="flex-grow"></div>
+                                <button
+                                    type="button"
+                                    onClick={handleAddText}
+                                    className="mt-auto w-full h-12 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+                                >
+                                    Agregar Texto
+                                </button>
+                            </div>
+
+                            {/* Sección de Imagen */}
+                            <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
+                                <ImageUploader onUpload={handleAddImage} />
+                            </div>
+
+                            {/* Sección de Video */}
+                            <div className="flex-1 min-w-[150px] min-h-[150px] border border-gray-300 dark:border-gray-700 rounded-md p-4 flex flex-col justify-between bg-white dark:bg-gray-800">
+                                <VideoEmbedder onEmbed={handleAddVideo} />
+                            </div>
                         </div>
                     </div>
                 </div>
