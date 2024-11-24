@@ -2,15 +2,17 @@ import React from 'react';
 
 const BlogCard = ({ blog }) => {
     return (
-        <div className="group flex flex-col gap-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-300 w-full sm:w-1/2 lg:w-1/3 max-w-xs">
+        <div className="group flex flex-col gap-y-4 p-4 bg-gray-100 dark:bg-gray-veryDark border dark:border-gray-dark rounded-lg shadow-md dark:shadow-none hover:shadow-lg hover:scale-105 dark:hover:scale-102 transition-transform duration-300 w-full sm:w-1/2 lg:w-1/3 max-w-xs">
             {/* Imagen del blog */}
-            <img
-                src={blog.image || '/assets/default-image.jpg'}
-                alt={blog.title || 'Sin título'}
-                className="w-full h-40 object-cover rounded-t-lg mb-4"
-                loading="lazy"
-                onError={(e) => (e.target.src = '/assets/default-image.jpg')}
-            />
+            <div className="overflow-hidden rounded-t-lg">
+                <img
+                    src={blog.image || '/assets/default-image.jpg'}
+                    alt={blog.title || 'Sin título'}
+                    className="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-110"
+                    loading="lazy"
+                    onError={(e) => (e.target.src = '/assets/default-image.jpg')}
+                />
+            </div>
             {/* Título */}
             <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                 {blog.title || 'Sin título'}
@@ -32,5 +34,3 @@ const BlogCard = ({ blog }) => {
 };
 
 export default BlogCard;
-
-

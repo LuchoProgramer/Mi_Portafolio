@@ -42,12 +42,27 @@ const BlogCreate = () => {
         }
         setIsSubmitting(true);
         setError('');
+
         try {
+            // Obtén la primera imagen del blog como destacada
+            const firstImageBlock = blocks.find((block) => block.type === 'image');
+            const image = firstImageBlock ? firstImageBlock.src : null;
+
+            // Genera un resumen a partir del primer bloque de texto
+            const firstTextBlock = blocks.find((block) => block.type === 'text');
+            const excerpt = firstTextBlock
+                ? firstTextBlock.content.replace(/<[^>]*>?/gm, '').substring(0, 100) + '...'
+                : 'No hay contenido disponible.';
+
+            // Guarda el blog en Firestore
             await addDoc(collection(db, "blogs"), {
                 title: title.trim(),
                 blocks,
+                image,
+                excerpt,
                 createdAt: new Date(),
             });
+
             alert('Blog creado exitosamente');
             setTitle('');
             setBlocks([]);
