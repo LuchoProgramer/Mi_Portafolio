@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { db } from '../../firebaseConfig';
 import { useParams } from 'react-router-dom';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import Comments from './Comments';
-import SEO from '../SEO';
 
 const BlogDetail = () => {
     const { slug } = useParams(); // Obtener el slug desde la URL
@@ -59,13 +59,39 @@ const BlogDetail = () => {
 
     return (
         <>
-            {/* Componente SEO para meta etiquetas dinámicas */}
-            <SEO
-                title={blog.title}
-                description={blog.excerpt || "Lee este interesante artículo en mi blog de desarrollo web."}
-                image={blog.image || "https://res.cloudinary.com/dltfsttr7/image/upload/v1732480322/default-blog-image.jpg"} // Imagen predeterminada si no hay destacada
-                url={`https://luchodev.netlify.app/blog/${slug}`}
-            />
+            {/* Metaetiquetas dinámicas para SEO */}
+            <Helmet>
+                <title>{blog.title} - Blog de Luis Viteri</title>
+                <meta
+                    name="description"
+                    content={blog.excerpt || "Lee este interesante artículo en mi blog de desarrollo web."}
+                />
+                <meta property="og:title" content={blog.title} />
+                <meta
+                    property="og:description"
+                    content={blog.excerpt || "Lee este interesante artículo en mi blog de desarrollo web."}
+                />
+                <meta
+                    property="og:image"
+                    content={blog.image || "https://res.cloudinary.com/dltfsttr7/image/upload/v1732480322/default-blog-image.jpg"}
+                />
+                <meta
+                    property="og:url"
+                    content={`https://luchodev.netlify.app/blog/${slug}`}
+                />
+                <meta property="og:type" content="article" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={blog.title} />
+                <meta
+                    name="twitter:description"
+                    content={blog.excerpt || "Lee este interesante artículo en mi blog de desarrollo web."}
+                />
+                <meta
+                    name="twitter:image"
+                    content={blog.image || "https://res.cloudinary.com/dltfsttr7/image/upload/v1732480322/default-blog-image.jpg"}
+                />
+            </Helmet>
+
             <div className="max-w-3xl mx-auto p-4 mt-12 mb-8">
                 <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
                     {blog.title}
