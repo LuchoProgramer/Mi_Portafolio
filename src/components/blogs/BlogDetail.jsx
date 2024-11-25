@@ -7,11 +7,16 @@ import SEO from '../SEO';
 
 const BlogDetail = () => {
     const { slug } = useParams(); // Obtener el slug desde la URL
-    const [blog, setBlog] = useState(null);
+    const [blog, setBlog] = useState(null); // Datos del blog
+    const [isLoading, setIsLoading] = useState(true); // Estado de carga
+    const [error, setError] = useState(null); // Error en la carga
 
     useEffect(() => {
         const fetchBlog = async () => {
             try {
+                setIsLoading(true);
+                setError(null);
+
                 // Crear una consulta para buscar por slug
                 const blogsRef = collection(db, 'blogs');
                 const q = query(blogsRef, where("slug", "==", slug));
@@ -21,17 +26,36 @@ const BlogDetail = () => {
                     const blogDoc = querySnapshot.docs[0]; // Obtener el primer documento encontrado
                     setBlog({ id: blogDoc.id, ...blogDoc.data() });
                 } else {
-                    console.log("No se encontró un blog con este slug.");
+                    setError("No se encontró un blog con este slug.");
                 }
             } catch (error) {
                 console.error("Error al obtener el blog:", error);
+                setError("Hubo un error al cargar el blog. Por favor, inténtalo más tarde.");
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchBlog();
     }, [slug]);
 
-    if (!blog) return <p>Cargando los datos del blog...</p>;
+    // Mostrar estado de carga
+    if (isLoading) {
+        return (
+            <p className="text-center mt-6 text-gray-500 dark:text-gray-400">
+                Cargando los datos del blog...
+            </p>
+        );
+    }
+
+    // Mostrar mensaje de error
+    if (error) {
+        return (
+            <p className="text-center mt-6 text-red-500 dark:text-red-400">
+                {error}
+            </p>
+        );
+    }
 
     return (
         <>
@@ -46,7 +70,7 @@ const BlogDetail = () => {
                 <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
                     {blog.title}
                 </h2>
-                {/* Iterar y renderizar los bloques */}
+                {/* Renderizar bloques dinámicamente */}
                 <div className="space-y-6">
                     {blog.blocks.map((block, index) => {
                         if (block.type === 'text') {

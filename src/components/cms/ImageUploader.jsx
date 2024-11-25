@@ -6,14 +6,22 @@ const ImageUploader = ({ onUpload }) => {
     const [preview, setPreview] = useState(''); // Previsualización de la imagen seleccionada
     const [isUploading, setIsUploading] = useState(false);
 
+    // Manejar cambio de archivo
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
+            // Validar el tipo de archivo antes de establecerlo
+            if (!selectedFile.type.startsWith('image/')) {
+                alert('Por favor, selecciona un archivo de imagen válido.');
+                return;
+            }
+
             setFile(selectedFile);
             setPreview(URL.createObjectURL(selectedFile)); // Mostrar vista previa
         }
     };
 
+    // Manejar subida de imagen
     const handleUpload = async () => {
         if (!file) return; // Evitar subir si no hay archivo seleccionado
 
@@ -30,12 +38,14 @@ const ImageUploader = ({ onUpload }) => {
                 gravity: 'auto',
             });
 
-            onUpload(transformedUrl); // Notificar al componente padre la URL transformada
+            // Notificar al componente padre la URL transformada
+            onUpload(transformedUrl);
             alert('Imagen subida exitosamente');
         } catch (error) {
             console.error('Error al subir la imagen:', error);
             alert('Error al subir la imagen, inténtalo nuevamente.');
         } finally {
+            // Restaurar estado inicial
             setIsUploading(false);
             setFile(null); // Limpiar el archivo seleccionado
             setPreview(''); // Limpiar la vista previa

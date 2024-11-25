@@ -9,10 +9,13 @@ import VideoEmbedder from '../cms/VideoEmbedder';
 // Función para generar slugs
 const generateSlug = (title) => {
     return title
+        .toString()
+        .normalize('NFD') // Normalizar caracteres Unicode
+        .replace(/[\u0300-\u036f]/g, '') // Eliminar marcas de acentuación
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '') // Elimina caracteres no alfanuméricos
+        .replace(/[^a-z0-9\s-]/g, '') // Eliminar caracteres no deseados
         .trim()
-        .replace(/\s+/g, '-'); // Reemplaza espacios por guiones
+        .replace(/\s+/g, '-'); // Reemplazar espacios por guiones
 };
 
 const BlogCreate = () => {
@@ -95,9 +98,10 @@ const BlogCreate = () => {
             setTitle('');
             setBlocks([]);
 
-            // Redirigir al listado de blogs
-            navigate('/cms/list');
+            // Redirigir al detalle del blog
+            navigate(`/blog/${slug}`);
         } catch (error) {
+            console.error('Error al crear el blog:', error);
             setError(`Hubo un error al crear el blog: ${error.message}`);
         } finally {
             setIsSubmitting(false);
@@ -200,7 +204,7 @@ const BlogCreate = () => {
                         ))}
                     </div>
 
-                    {/* Separador entre Bloques y Botones */}
+                    {/* Botones para agregar bloques */}
                     <div className="mt-6 border-t border-gray-300 dark:border-gray-700 pt-6">
                         <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
                             Agregar Bloques
@@ -211,7 +215,6 @@ const BlogCreate = () => {
                                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                     Texto
                                 </h4>
-                                <div className="flex-grow"></div>
                                 <button
                                     type="button"
                                     onClick={handleAddText}

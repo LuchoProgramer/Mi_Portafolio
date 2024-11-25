@@ -64,8 +64,8 @@ export const getTransformedImageUrl = (imageUrl, options = {}) => {
         gravity = 'auto', // Centrar automáticamente
         quality = 'auto', // Calidad automática
         format = 'auto', // Formato automático
-        radius = 0, // Sin bordes redondeados por defecto
-        effect = '', // Sin efectos adicionales por defecto
+        radius, // No definimos valor por defecto
+        effect, // No definimos valor por defecto
     } = options;
 
     // Validación de la URL
@@ -73,9 +73,29 @@ export const getTransformedImageUrl = (imageUrl, options = {}) => {
         throw new Error('URL de imagen no válida o no proviene de Cloudinary.');
     }
 
-    // Reemplaza la parte '/upload/' en la URL para agregar transformaciones
+    // Construir la cadena de transformación dinámicamente
+    const transformations = [
+        `w_${width}`,
+        `h_${height}`,
+        `c_${crop}`,
+        `g_${gravity}`,
+        `q_${quality}`,
+        `f_${format}`,
+    ];
+
+    // Agregar transformaciones opcionales sólo si están definidas
+    if (radius !== undefined && radius !== 0) {
+        transformations.push(`r_${radius}`);
+    }
+    if (effect && effect.trim() !== '') {
+        transformations.push(`e_${effect}`);
+    }
+
+    const transformationString = transformations.join(',');
+
+    // Reemplazar '/upload/' en la URL con la cadena de transformación
     return imageUrl.replace(
         '/upload/',
-        `/upload/w_${width},h_${height},c_${crop},g_${gravity},q_${quality},f_${format},r_${radius},e_${effect}/`
+        `/upload/${transformationString}/`
     );
 };
